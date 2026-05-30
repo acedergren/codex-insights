@@ -743,6 +743,7 @@ test("parseArgs defaults to a rolling 7-day window", () => {
 test("marketplace catalog points at the installable plugin package", () => {
   const marketplace = JSON.parse(readFileSync(".agents/plugins/marketplace.json", "utf8"));
   const plugin = marketplace.plugins.find((entry) => entry.name === "agent-workflow-roast");
+  const manifest = JSON.parse(readFileSync("plugins/agent-workflow-roast/.codex-plugin/plugin.json", "utf8"));
 
   assert.equal(plugin?.source?.path, "./plugins/agent-workflow-roast");
   assert.equal(existsSync("plugins/agent-workflow-roast/.codex-plugin/plugin.json"), true);
@@ -750,6 +751,8 @@ test("marketplace catalog points at the installable plugin package", () => {
   assert.equal(existsSync("plugins/agent-workflow-roast/scripts/agent-workflow-roast.mjs"), true);
   assert.equal(existsSync("plugins/agent-workflow-roast/skills/roast/SKILL.md"), true);
   assert.equal(existsSync("plugins/agent-workflow-roast/skills/coachs-read/SKILL.md"), false);
+  assert.equal(manifest.interface.composerIcon, "./assets/flame-composer-icon.svg");
+  assert.equal(existsSync("plugins/agent-workflow-roast/assets/flame-composer-icon.svg"), true);
 });
 
 test("roast skill handles precomputed report coaching without reading raw sessions", () => {

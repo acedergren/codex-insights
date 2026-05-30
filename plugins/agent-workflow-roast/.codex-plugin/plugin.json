@@ -38,6 +38,7 @@
       "Export Agent Workflow Roast as markdown"
     ],
     "brandColor": "#5C6F68",
+    "composerIcon": "./assets/flame-composer-icon.svg",
     "screenshots": []
   }
 }

@@ -207,6 +207,7 @@ export function parseArgs(argv) {
       process.env.CODEX_INSIGHTS_OUTPUT_DIR ||
       process.env.INIT_CWD ||
       process.cwd(),
+    project: null,
     open: process.env.CI !== "1",
     codexHome: process.env.CODEX_HOME || join(homedir(), ".codex"),
     useAi: process.env.AGENT_WORKFLOW_ROAST_NO_AI !== "1" && process.env.CODEX_INSIGHTS_NO_AI !== "1",
@@ -232,6 +233,10 @@ export function parseArgs(argv) {
       options.outputDir = argv[++index];
     } else if (arg.startsWith("--output-dir=")) {
       options.outputDir = arg.split("=", 2)[1];
+    } else if (arg === "--project") {
+      options.project = argv[++index];
+    } else if (arg.startsWith("--project=")) {
+      options.project = arg.split("=", 2)[1];
     } else if (arg === "--no-open") {
       options.open = false;
     } else if (arg === "--no-ai") {
@@ -252,6 +257,10 @@ export function parseArgs(argv) {
   }
   if (options.exportFormat && !["markdown", "html", "json"].includes(options.exportFormat)) {
     throw new Error("--export must be markdown, html, or json");
+  }
+  if (options.project != null) {
+    options.project = String(options.project).trim();
+    if (!options.project) throw new Error("--project must be a non-empty project name or path");
   }
   return options;
 }
@@ -550,6 +559,53 @@ export function projectFromCwd(cwd) {
   const name = basename(clean);
   if (!name || name === "." || name === "/") return "unknown";
   return name;
+}
+
+function normalizeProjectFilter(project, options = {}) {
+  const raw = String(project || "").trim();
+  if (!raw) return null;
+  const isPathFilter = raw === "." || raw.startsWith("..") || raw.includes("/") || raw.includes("\\");
+  const baseDir = options.baseDir || options.outputDir || process.cwd();
+  const resolvedPath = isPathFilter ? normalizeMatchPath(resolve(baseDir, raw)) : "";
+  return {
+    raw,
+    name: isPathFilter ? projectFromCwd(resolvedPath) : raw,
+    path: resolvedPath,
+    isPathFilter,
+  };
+}
+
+function normalizeMatchPath(value) {
+  return resolve(String(value || "")).replace(/[/\\]+$/, "");
+}
+
+function pathIsSameOrInside(child, parent) {
+  if (!child || !parent) return false;
+  return child === parent || child.startsWith(`${parent}/`);
+}
+
+function pathSegmentsForMatch(value) {
+  return normalizeMatchPath(value).split(/[\\/]+/).filter(Boolean);
+}
+
+export function filterRowsByProject(rows, project, options = {}) {
+  const filter = normalizeProjectFilter(project, options);
+  if (!filter) return { rows, filter: null };
+  const scopedRows = rows.filter((row) => {
+    const cwd = extractCwd(row);
+    if (!cwd) return false;
+    if (!filter.isPathFilter) return projectFromCwd(cwd) === filter.name || pathSegmentsForMatch(cwd).includes(filter.name);
+    return pathIsSameOrInside(normalizeMatchPath(cwd), filter.path);
+  });
+  return {
+    rows: scopedRows,
+    filter: {
+      query: filter.raw,
+      name: filter.name,
+      matchedRows: scopedRows.length,
+      excludedRows: Math.max(0, rows.length - scopedRows.length),
+    },
+  };
 }
 
 export function analyzeRows(rows, options = {}) {
@@ -1305,6 +1361,12 @@ function tryParseJson(text) {
   }
 }
 
+function reportSubtitle(report) {
+  const filter = report.stats?.projectFilter;
+  if (filter?.name) return `A coaching report for ${filter.name}, with receipts.`;
+  return "A coaching report for your agent workflow, with receipts.";
+}
+
 export function renderHtml(report) {
   const template = readFileSync(join(ROOT_DIR, "templates", "report.html"), "utf8");
   const css = readFileSync(join(ROOT_DIR, "assets", "report.css"), "utf8");
@@ -1355,6 +1417,7 @@ export function renderHtml(report) {
 
   return template
     .replaceAll("{{title}}", escapeHtml(report.title))
+    .replace("{{subtitle}}", escapeHtml(reportSubtitle(report)))
     .replace("{{css}}", css)
     .replace("{{coachingHeader}}", coachingHeader)
     .replace("{{effectiveness}}", effectiveness)
@@ -1366,6 +1429,9 @@ export function renderHtml(report) {
 
 export function renderMarkdown(report) {
   const lines = [`# ${report.title}`, "", report.insights.summary, "", "## At a Glance"];
+  if (report.stats.projectFilter?.name) {
+    lines.splice(2, 0, `Scope: ${report.stats.projectFilter.name}`, "");
+  }
   const glance = report.insights.atAGlance || {};
   const recommendations = report.recommendations || report.insights.recommendations || buildArtifactQueue(report.stats, report.insights);
   const signals = report.signals || buildSignals(report.stats);
@@ -1539,8 +1605,10 @@ export function applySessionCwd(rows) {
   });
 }
 
-export function buildReport(inputs, options) {
-  const stats = analyzeRows(inputs.rows, { days: options.days, malformedRows: inputs.malformedRows });
+export function buildReport(inputs, options = {}) {
+  const scoped = filterRowsByProject(inputs.rows, options.project, { baseDir: options.outputDir });
+  const stats = analyzeRows(scoped.rows, { days: options.days, malformedRows: inputs.malformedRows });
+  if (scoped.filter) stats.projectFilter = scoped.filter;
   const memoryHits = options.includeMemory ? selectMemoryHits(inputs.memoryText, stats.projects) : [];
   const signals = buildSignals(stats);
   const useAi =
@@ -2497,6 +2565,9 @@ function renderEvidence(signals = [], memoryHits = [], stats = {}) {
     { label: "Tools", value: formatNumber(stats.tools?.length || 0) },
     { label: "Friction", value: formatNumber(frictionTotal(stats.friction || [])) },
   ];
+  if (stats.projectFilter?.name) {
+    context.unshift({ label: "Scope", value: stats.projectFilter.name });
+  }
   return `<div class="evidence-layout">
     <div class="evidence-stats">
       ${context
@@ -2603,6 +2674,7 @@ Options:
   --export markdown|html|json Export format, default html
   --output <path>            Output path for markdown/json; directory for HTML
   --output-dir <path>        Directory for the default HTML artifact
+  --project <name|path>      Analyze only rows from a project name, path segment, or cwd path
   --no-open                  Do not open the generated HTML
   --no-ai                    Skip codex exec synthesis and use deterministic coaching
   --codex-home <path>        Override ~/.codex input root

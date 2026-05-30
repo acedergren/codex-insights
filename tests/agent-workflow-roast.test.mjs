@@ -18,6 +18,7 @@ import {
   buildSignals,
   cleanupOldTempReports,
   collectSessionFiles,
+  filterRowsByProject,
   hasNearDuplicatePrompts,
   loadInputs,
   mapSignalToArtifact,
@@ -279,6 +280,67 @@ test("applySessionCwd carries session cwd into later rows", () => {
 
   assert.equal(stats.projects[0].name, "agent-workflow-roast");
   assert.equal(stats.projects[0].count, 2);
+});
+
+test("filterRowsByProject matches project names after session cwd propagation", () => {
+  const rows = applySessionCwd([
+    { type: "session_meta", payload: { cwd: "/Users/acedergr/Documents/agent-workflow-roast" } },
+    { type: "response_item", content: "Token usage: 10 total (7 input + 3 output)" },
+    { type: "response_item", cwd: "/Users/acedergr/Documents/agent-workflow-roast/packages/cli", content: "subdir work" },
+    { type: "session_meta", payload: { cwd: "/Users/acedergr/Projects/oci-self-service-portal" } },
+    { type: "response_item", content: "Token usage: 20 total (15 input + 5 output)" },
+  ]);
+
+  const scoped = filterRowsByProject(rows, "agent-workflow-roast");
+
+  assert.equal(scoped.rows.length, 3);
+  assert.equal(scoped.filter.name, "agent-workflow-roast");
+  assert.equal(scoped.filter.matchedRows, 3);
+  assert.equal(scoped.filter.excludedRows, 2);
+});
+
+test("filterRowsByProject matches cwd paths and subdirectories only", () => {
+  const rows = [
+    { cwd: "/tmp/agent-workflow-roast", content: "root row" },
+    { cwd: "/tmp/agent-workflow-roast/packages/cli", content: "subdir row" },
+    { cwd: "/tmp/agent-workflow-roast-other", content: "sibling row" },
+  ];
+
+  const scoped = filterRowsByProject(rows, "/tmp/agent-workflow-roast");
+
+  assert.equal(scoped.rows.length, 2);
+  assert.deepEqual(
+    scoped.rows.map((row) => row.content),
+    ["root row", "subdir row"],
+  );
+});
+
+test("buildReport scopes stats and rendered header when --project is supplied", () => {
+  const inputs = {
+    rows: applySessionCwd([
+      { type: "session_meta", payload: { cwd: "/Users/acedergr/Documents/agent-workflow-roast" } },
+      { type: "response_item", content: "failed build but verified fix" },
+      { type: "session_meta", payload: { cwd: "/Users/acedergr/Projects/oci-self-service-portal" } },
+      { type: "response_item", content: "auth retry missing proof" },
+    ]),
+    malformedRows: 0,
+    memoryText: "",
+    jsonlFiles: [],
+  };
+
+  const report = buildReport(inputs, {
+    days: 30,
+    includeMemory: false,
+    useAi: false,
+    project: "oci-self-service-portal",
+  });
+  const html = renderHtml(report);
+
+  assert.equal(report.stats.totalRows, 2);
+  assert.equal(report.stats.projects.length, 1);
+  assert.equal(report.stats.projects[0].name, "oci-self-service-portal");
+  assert.equal(report.stats.projectFilter.matchedRows, 2);
+  assert.match(html, /A coaching report for oci-self-service-portal, with receipts/);
 });
 
 test("selectMemoryHits returns project-related memory context", () => {
@@ -567,7 +629,16 @@ test("command wrapper passes parsed arguments as argv without shell interpretati
     env: {
       ...process.env,
       AGENT_WORKFLOW_ROAST_OUTPUT_DIR: outputDir,
-      AGENT_WORKFLOW_ROAST_ARGV_JSON: JSON.stringify(["--days", "1", "--no-ai", "--no-open", "--codex-home", codexHome]),
+      AGENT_WORKFLOW_ROAST_ARGV_JSON: JSON.stringify([
+        "--days",
+        "1",
+        "--project",
+        "agent-workflow-roast",
+        "--no-ai",
+        "--no-open",
+        "--codex-home",
+        codexHome,
+      ]),
     },
   });
 
@@ -640,12 +711,25 @@ test("cleanupOldTempReports removes stale report directories", () => {
 });
 
 test("parseArgs supports plan options", () => {
-  const options = parseArgs(["--days", "30", "--no-memory", "--export", "json", "--output-dir", "/tmp/reports", "--no-open", "--no-ai"]);
+  const options = parseArgs([
+    "--days",
+    "30",
+    "--no-memory",
+    "--export",
+    "json",
+    "--output-dir",
+    "/tmp/reports",
+    "--project",
+    "agent-workflow-roast",
+    "--no-open",
+    "--no-ai",
+  ]);
 
   assert.equal(options.days, 30);
   assert.equal(options.includeMemory, false);
   assert.equal(options.exportFormat, "json");
   assert.equal(options.outputDir, "/tmp/reports");
+  assert.equal(options.project, "agent-workflow-roast");
   assert.equal(options.open, false);
   assert.equal(options.useAi, false);
 });

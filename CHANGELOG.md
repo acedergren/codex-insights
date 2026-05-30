@@ -2,6 +2,12 @@
 
 All notable changes to Agent Workflow Roast are documented here.
 
+## Unreleased
+
+### Added
+
+- Added `--project <name|path>` to scope reports to one Codex project by cwd-derived project name, path segment, or path.
+
 ## [0.2.2] - 2026-05-30
 
 ### Added

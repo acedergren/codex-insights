@@ -47,6 +47,7 @@ Then start or restart Codex and run:
 
 ```text
 /roast
+/roast --project oci-self-service-portal
 ```
 
 Run the analyzer directly from the repository:
@@ -65,6 +66,13 @@ Export a durable Markdown report:
 
 ```bash
 npm run roast -- --export markdown --output agent-workflow-roast.md
+```
+
+Analyze one project only:
+
+```bash
+npm run roast -- --project agent-workflow-roast --no-open
+npm run roast -- --project /Users/acedergr/Projects/oci-self-service-portal --no-open
 ```
 
 The command prints the generated path. Default HTML reports are written to `./agent-workflow-roast.html` and opened automatically on macOS unless `--no-open` is passed.
@@ -106,6 +114,7 @@ If no measured token data exists for a row, the report falls back to a redacted 
 --export markdown|html|json Export format, default html
 --output <path>             Output path for markdown/json; directory for HTML
 --output-dir <path>         Directory for the default agent-workflow-roast.html artifact
+--project <name|path>       Analyze only rows from a project name, path segment, or cwd path
 --no-open                   Do not open generated HTML
 --codex-home <path>         Override ~/.codex input root
 ```

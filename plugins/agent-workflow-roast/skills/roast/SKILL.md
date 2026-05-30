@@ -21,6 +21,7 @@ If the user provides existing Agent Workflow Roast JSON, markdown, HTML, aggrega
 
    ```bash
    AGENT_WORKFLOW_ROAST_OUTPUT_DIR="$TRIGGER_DIR" node scripts/agent-workflow-roast.mjs --days 30 --no-memory
+   AGENT_WORKFLOW_ROAST_OUTPUT_DIR="$TRIGGER_DIR" node scripts/agent-workflow-roast.mjs --project oci-self-service-portal
    AGENT_WORKFLOW_ROAST_OUTPUT_DIR="$TRIGGER_DIR" node scripts/agent-workflow-roast.mjs --no-ai
    AGENT_WORKFLOW_ROAST_OUTPUT_DIR="$TRIGGER_DIR" node scripts/agent-workflow-roast.mjs --export markdown
    ```

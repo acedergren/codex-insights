@@ -1,0 +1,201 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-05-31T20:24:57Z",
+  "title": "Design System: Agent Workflow Roast",
+  "extensions": {
+    "colorMeta": {
+      "ink": {
+        "role": "neutral",
+        "displayName": "Workbench Ink",
+        "canonical": "#121827",
+        "tonalRamp": ["oklch(16% 0.025 260)", "oklch(28% 0.025 260)", "oklch(40% 0.025 260)", "oklch(52% 0.025 260)", "oklch(64% 0.025 260)", "oklch(76% 0.025 260)", "oklch(88% 0.025 260)", "oklch(96% 0.025 260)"]
+      },
+      "primary-blue": {
+        "role": "primary",
+        "displayName": "Receipt Blue",
+        "canonical": "#2f6fd6",
+        "tonalRamp": ["oklch(18% 0.12 260)", "oklch(28% 0.14 260)", "oklch(38% 0.16 260)", "oklch(50% 0.17 260)", "oklch(62% 0.16 260)", "oklch(74% 0.12 260)", "oklch(86% 0.07 260)", "oklch(95% 0.035 260)"]
+      },
+      "success-green": {
+        "role": "secondary",
+        "displayName": "Evidence Green",
+        "canonical": "#2f9b67",
+        "tonalRamp": ["oklch(18% 0.09 155)", "oklch(28% 0.11 155)", "oklch(38% 0.12 155)", "oklch(50% 0.13 155)", "oklch(62% 0.12 155)", "oklch(74% 0.09 155)", "oklch(86% 0.05 155)", "oklch(95% 0.025 155)"]
+      },
+      "warning-orange": {
+        "role": "tertiary",
+        "displayName": "Review Orange",
+        "canonical": "#d88318",
+        "tonalRamp": ["oklch(18% 0.08 70)", "oklch(30% 0.11 70)", "oklch(42% 0.14 70)", "oklch(54% 0.16 70)", "oklch(66% 0.14 70)", "oklch(78% 0.09 70)", "oklch(88% 0.05 70)", "oklch(96% 0.025 70)"]
+      },
+      "danger-red": {
+        "role": "tertiary",
+        "displayName": "Boundary Red",
+        "canonical": "#c84b43",
+        "tonalRamp": ["oklch(18% 0.08 25)", "oklch(30% 0.11 25)", "oklch(42% 0.13 25)", "oklch(54% 0.15 25)", "oklch(66% 0.12 25)", "oklch(78% 0.08 25)", "oklch(88% 0.045 25)", "oklch(96% 0.02 25)"]
+      },
+      "playground-bg": {
+        "role": "neutral",
+        "displayName": "Night Workbench",
+        "canonical": "#0b1118",
+        "tonalRamp": ["oklch(12% 0.025 250)", "oklch(20% 0.03 250)", "oklch(30% 0.035 250)", "oklch(42% 0.035 250)", "oklch(55% 0.03 250)", "oklch(68% 0.025 250)", "oklch(82% 0.02 250)", "oklch(94% 0.015 250)"]
+      }
+    },
+    "typographyMeta": {
+      "headline": {
+        "displayName": "Report Headline",
+        "purpose": "Report titles and first-read summaries."
+      },
+      "body": {
+        "displayName": "Report Body",
+        "purpose": "Evidence explanations, coaching prose, and UI descriptions."
+      },
+      "mono-label": {
+        "displayName": "Command Label",
+        "purpose": "Commands, paths, code-like labels, and the /roast marker."
+      }
+    },
+    "shadows": [
+      {
+        "name": "workspace-lift",
+        "value": "0 18px 50px rgb(17 24 39 / 0.08)",
+        "purpose": "The single outer report container on light backgrounds."
+      },
+      {
+        "name": "panel-lift",
+        "value": "0 10px 24px rgb(17 24 39 / 0.04)",
+        "purpose": "Standard report panels."
+      },
+      {
+        "name": "node-lift",
+        "value": "0 10px 24px rgb(17 24 39 / 0.06)",
+        "purpose": "Diagram nodes and objects that need to sit above a canvas."
+      }
+    ],
+    "motion": [
+      {
+        "name": "state-fast",
+        "value": "150ms ease-out",
+        "purpose": "Button, nav, and chip state changes."
+      },
+      {
+        "name": "copy-feedback",
+        "value": "1600ms timeout",
+        "purpose": "Temporary copied or copy-failed text feedback."
+      }
+    ],
+    "breakpoints": [
+      {
+        "name": "playground-stack",
+        "value": "900px"
+      }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "Use for the main action in a compact tool surface.",
+      "html": "<button class=\"ds-btn-primary\">Generate report</button>",
+      "css": ".ds-btn-primary { min-height: 38px; padding: 0 10px; border: 1px solid #3a7ee3; border-radius: 7px; background: #1f5fbf; color: #eef5ff; font: 700 0.88rem/1.2 Inter, ui-sans-serif, system-ui, sans-serif; cursor: pointer; transition: background-color 150ms ease-out, border-color 150ms ease-out; } .ds-btn-primary:hover { background: #2f6fd6; border-color: #65a3ff; } .ds-btn-primary:focus-visible { outline: 3px solid rgb(101 163 255 / 0.35); outline-offset: 2px; }"
+    },
+    {
+      "name": "Quick Nav Link",
+      "kind": "nav",
+      "refersTo": "nav-link",
+      "description": "Use for dense report section navigation.",
+      "html": "<a class=\"ds-nav-link\" href=\"#evidence\">Evidence</a>",
+      "css": ".ds-nav-link { display: inline-flex; align-items: center; min-height: 32px; padding: 7px 10px; border: 1px solid #dfe6ef; border-radius: 6px; background: #f5f8fc; color: #29415f; font: 720 0.82rem/1.2 Inter, ui-sans-serif, system-ui, sans-serif; text-decoration: none; transition: background-color 150ms ease-out, border-color 150ms ease-out; } .ds-nav-link:hover { background: #e8f1ff; border-color: #cfe0f7; } .ds-nav-link:focus-visible { outline: 3px solid rgb(47 111 214 / 0.25); outline-offset: 2px; }"
+    },
+    {
+      "name": "Info Badge",
+      "kind": "chip",
+      "refersTo": "badge-info",
+      "description": "Use for status, category, and confidence labels.",
+      "html": "<span class=\"ds-badge-info\">High confidence</span>",
+      "css": ".ds-badge-info { display: inline-flex; align-items: center; min-height: 28px; padding: 4px 12px; border: 1px solid #cfe0f8; border-radius: 6px; background: #f7fbff; color: #2365c8; font: 690 0.86rem/1.2 Inter, ui-sans-serif, system-ui, sans-serif; }"
+    },
+    {
+      "name": "Report Panel",
+      "kind": "card",
+      "refersTo": "panel-card",
+      "description": "Use for major evidence and coaching sections.",
+      "html": "<section class=\"ds-report-panel\"><div class=\"ds-panel-head\"><h2>Coach read</h2><p>Evidence-backed summary</p></div><div class=\"ds-panel-body\">Direct, useful coaching belongs here.</div></section>",
+      "css": ".ds-report-panel { max-width: 520px; border: 1px solid #dfe6ef; border-radius: 8px; background: #ffffff; color: #121827; box-shadow: 0 10px 24px rgb(17 24 39 / 0.04); font-family: Inter, ui-sans-serif, system-ui, sans-serif; } .ds-panel-head { padding: 18px 20px 8px; } .ds-panel-head h2 { margin: 0 0 4px; font-size: 1rem; line-height: 1.25; } .ds-panel-head p { margin: 0; color: #62708a; font-size: 0.82rem; } .ds-panel-body { padding: 10px 20px 20px; font-size: 0.88rem; line-height: 1.5; }"
+    },
+    {
+      "name": "Dark Text Field",
+      "kind": "input",
+      "refersTo": "input-dark",
+      "description": "Use in the playground for prompt and configuration inputs.",
+      "html": "<label class=\"ds-field\"><span>Coaching tone</span><input class=\"ds-input\" value=\"Direct and kind\" /></label>",
+      "css": ".ds-field { display: grid; gap: 8px; max-width: 320px; color: #9fb0c4; font: 0.9rem/1.35 Inter, ui-sans-serif, system-ui, sans-serif; } .ds-input { width: 100%; min-height: 38px; padding: 0 10px; border: 1px solid #26364a; border-radius: 7px; background: #172333; color: #eef5ff; font: inherit; } .ds-input:hover { border-color: #3a4d66; } .ds-input:focus-visible { outline: 3px solid rgb(101 163 255 / 0.28); outline-offset: 2px; border-color: #65a3ff; }"
+    },
+    {
+      "name": "Metric Row",
+      "kind": "custom",
+      "refersTo": "panel-card",
+      "description": "Use for compact measured signals with an icon, value, and explanation.",
+      "html": "<div class=\"ds-metric-row\"><span class=\"ds-metric-icon\">42</span><div><h3>Friction markers</h3><p>Grouped across recent sessions.</p></div><strong>12</strong></div>",
+      "css": ".ds-metric-row { display: grid; grid-template-columns: 50px minmax(0, 1fr) auto; gap: 14px; align-items: center; max-width: 520px; padding: 18px 20px; background: #ffffff; color: #121827; font-family: Inter, ui-sans-serif, system-ui, sans-serif; } .ds-metric-icon { display: inline-grid; place-items: center; width: 50px; height: 50px; border-radius: 999px; background: #ebf2ff; color: #2f6fd6; font-weight: 820; } .ds-metric-row h3 { margin: 0 0 2px; font-size: 0.86rem; } .ds-metric-row p { margin: 0; color: #62708a; font-size: 0.76rem; } .ds-metric-row strong { font-size: 1.65rem; line-height: 1; }"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Honest Workbench",
+    "overview": "Agent Workflow Roast should feel like a practical surface where a developer lays out evidence, compares the signals, and leaves with a better next move. It is candid, local, and work-focused: the visual system earns trust by making receipts easy to scan before it offers coaching.\n\nThe report UI uses restrained light surfaces, crisp borders, compact panels, and a small semantic accent set. The playground uses a darker workbench variant for prompt experimentation, but it keeps the same density, rounded geometry, and direct component language. The system rejects a punitive scorecard, generic SaaS-dashboard tropes, and raw log-dump density.",
+    "keyCharacteristics": [
+      "Evidence first, coaching second.",
+      "Compact panels with clear hierarchy and modest depth.",
+      "Semantic color reserved for status, categories, and action.",
+      "System sans typography with mono labels only where command-like context matters.",
+      "Controls that feel dense, calm, and actionable."
+    ],
+    "rules": [
+      {
+        "name": "The Receipt-First Color Rule",
+        "body": "Color must identify action, status, or category. It is not decoration.",
+        "section": "colors"
+      },
+      {
+        "name": "The No Punitive Heatmap Rule",
+        "body": "Never turn the roast into a red-heavy grade board. Red is reserved for concrete failure or risk.",
+        "section": "colors"
+      },
+      {
+        "name": "The Tool-Type Rule",
+        "body": "Use one sans family for nearly everything. Mono appears only for commands, paths, code, or the /roast label.",
+        "section": "typography"
+      },
+      {
+        "name": "The Scan-First Rule",
+        "body": "Headings must create visible jumps in scale or weight. If panel headings, labels, and body copy blur together, the type hierarchy is too flat.",
+        "section": "typography"
+      },
+      {
+        "name": "The Structural Layer Rule",
+        "body": "Pair borders with soft shadows only for major containers and diagram nodes. Repeated cards should stay mostly tonal and bordered.",
+        "section": "elevation"
+      },
+      {
+        "name": "The No Ghost-Card Rule",
+        "body": "Do not use a decorative 1px border plus a large soft shadow on every element. If everything floats, nothing is evidence.",
+        "section": "elevation"
+      }
+    ],
+    "dos": [
+      "Do lead every report surface with evidence and then coaching.",
+      "Do keep semantic colors rare enough that they still mean action, status, or category.",
+      "Do use 8px panel radii, 6px control radii, and 999px only for tiny status chips or icons.",
+      "Do keep text contrast at WCAG AA or better across report and playground surfaces.",
+      "Do preserve the local, privacy-respecting feel: the interface should look like it handles sensitive work history carefully."
+    ],
+    "donts": [
+      "Don't create a punitive scorecard. The interface must not shame the user, over-focus on grades, or turn coaching into gamified judgment.",
+      "Don't use generic SaaS-dashboard tropes: hero metrics, vague productivity claims, decorative card grids, or gradient-text emphasis.",
+      "Don't ship raw log-dump density. Evidence must be grouped, labeled, and scannable.",
+      "Don't use red as a general \"bad workflow\" wash. Boundary Red is for concrete error, failure, or high-risk friction only.",
+      "Don't add side-stripe borders, decorative glass effects, oversized shadows, or rounded cards above 16px."
+    ]
+  }
+}

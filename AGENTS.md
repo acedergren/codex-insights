@@ -45,6 +45,13 @@ This file applies to the entire `codex-insights` repository.
 - Deterministic fallback output must remain useful when `codex exec` fails, is unavailable, or is disabled.
 - Keep HTML/CSS responsive and inspect generated output when changing layout.
 
+## Generated Report UI
+
+- Plugin runs generate `agent-workflow-roast.html` through `plugins/agent-workflow-roast/scripts/agent-workflow-roast.mjs`, `plugins/agent-workflow-roast/templates/report.html`, and `plugins/agent-workflow-roast/assets/report.css`.
+- Lasting generated-report UI changes belong in `templates/report.html`, `assets/report.css`, or renderer code in `agent-workflow-roast.mjs`, not in generated `agent-workflow-roast.html`.
+- The coaching playground at `plugins/agent-workflow-roast/playgrounds/roast-coach-playground.html` is a source playground for prompt/design iteration. Changes there do not affect generated roast reports unless the corresponding template/CSS/renderer changes are also made.
+- When changing generated report UI, add or update tests around `renderHtml()` and run the safe smoke test with `npm run roast -- --no-ai --no-open --output-dir .`; inspect the generated `agent-workflow-roast.html` but do not commit it.
+
 ## Git Expectations
 
 - Commit early and commit coherent units of work.

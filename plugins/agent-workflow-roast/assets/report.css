@@ -11,6 +11,7 @@
   --orange: #d88318;
   --red: #c84b43;
   --nav: #101923;
+  --focus-ring: #184f9f;
   --font-sans: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   --font-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
   --text-caption: 0.75rem;
@@ -127,6 +128,19 @@ body {
   font-weight: 720;
   line-height: 1.2;
   text-decoration: none;
+  transition: background-color 160ms ease-out, border-color 160ms ease-out, color 160ms ease-out;
+}
+
+.quick-nav a:hover {
+  color: var(--blue);
+  background: #edf4ff;
+  border-color: #c4d8f5;
+}
+
+.quick-nav a:focus-visible,
+.copy-button:focus-visible {
+  outline: 3px solid color-mix(in srgb, var(--focus-ring) 38%, transparent);
+  outline-offset: 2px;
 }
 
 .badge {
@@ -625,10 +639,15 @@ h2 {
   font-size: var(--text-caption);
   font-weight: 760;
   cursor: pointer;
+  transition: background-color 160ms ease-out, border-color 160ms ease-out, color 160ms ease-out, transform 160ms ease-out;
 }
 
 .copy-button:hover {
   background: #e8f1ff;
+}
+
+.copy-button:active {
+  transform: translateY(1px);
 }
 
 .copy-button[data-copied="true"] {

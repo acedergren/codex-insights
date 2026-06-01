@@ -17,6 +17,8 @@
         --green: #70d69a;
         --orange: #f2b25d;
         --purple: #b79cff;
+        --danger: #ff8b7f;
+        --focus: #9cc6ff;
         --font-sans: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
         --font-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
         --text-caption: 0.75rem;
@@ -90,11 +92,9 @@
 
       .section-label {
         margin: 22px 0 10px;
-        color: var(--muted);
-        font-size: var(--text-caption);
+        color: var(--text);
+        font-size: var(--text-label);
         font-weight: 760;
-        letter-spacing: 0.02em;
-        text-transform: uppercase;
       }
 
       label {
@@ -126,6 +126,37 @@
         padding: 0 10px;
       }
 
+      select:hover,
+      input:hover,
+      textarea:hover,
+      button:hover {
+        border-color: #426083;
+      }
+
+      select:focus-visible,
+      input:focus-visible,
+      textarea:focus-visible,
+      button:focus-visible {
+        outline: 3px solid rgb(156 198 255 / 0.32);
+        outline-offset: 2px;
+        border-color: var(--focus);
+      }
+
+      button {
+        cursor: pointer;
+        transition: background-color 160ms ease-out, border-color 160ms ease-out, color 160ms ease-out, transform 160ms ease-out;
+      }
+
+      button:active {
+        transform: translateY(1px);
+      }
+
+      button[aria-pressed="true"] {
+        border-color: var(--blue);
+        background: rgb(101 163 255 / 0.18);
+        color: var(--text);
+      }
+
       textarea {
         min-height: 92px;
         padding: 10px;
@@ -139,13 +170,13 @@
         gap: 8px;
       }
 
-      button {
-        cursor: pointer;
-      }
-
       .primary {
         background: #1f5fbf;
         border-color: #3a7ee3;
+      }
+
+      .secondary {
+        margin-top: 10px;
       }
 
       main {
@@ -160,6 +191,8 @@
         gap: 14px;
       }
 
+      .workbench-readout,
+      .signal-panel,
       .card {
         padding: 16px;
         background: var(--panel-2);
@@ -167,7 +200,23 @@
         border-radius: 10px;
       }
 
+      .workbench-readout {
+        display: grid;
+        align-content: start;
+        min-height: 210px;
+        background: #101a26;
+      }
+
       .card p {
+        margin-bottom: 0;
+        color: var(--muted);
+        font-size: var(--text-label);
+        line-height: 1.5;
+      }
+
+      .workbench-readout p,
+      .signal-panel p,
+      .glance-card p {
         margin-bottom: 0;
         color: var(--muted);
         font-size: var(--text-label);
@@ -186,8 +235,11 @@
         gap: 10px;
       }
 
-      .glance .card {
+      .glance-card {
         padding: 12px;
+        background: #121e2b;
+        border: 1px solid rgb(159 176 196 / 0.2);
+        border-radius: 8px;
       }
 
       .glance strong {
@@ -213,8 +265,32 @@
         display: grid;
         gap: 8px;
         margin-top: 10px;
-        padding-top: 10px;
-        border-top: 1px solid var(--line);
+        padding: 12px;
+        background: #101a26;
+        border: 1px solid rgb(159 176 196 / 0.2);
+        border-radius: 8px;
+      }
+
+      .field-topline,
+      .field-note {
+        display: flex;
+        align-items: baseline;
+        justify-content: space-between;
+        gap: 10px;
+      }
+
+      .field-note {
+        margin-top: -4px;
+        color: var(--muted);
+        font-size: var(--text-caption);
+        font-weight: 500;
+      }
+
+      output {
+        color: var(--text);
+        font-family: var(--font-mono);
+        font-size: var(--text-caption);
+        font-weight: 760;
       }
 
       .metric-grid {
@@ -263,6 +339,8 @@
 
       .prompt-box {
         padding: 14px;
+        border-color: #3a5170;
+        background: #111d2a;
       }
 
       .prompt-head {
@@ -290,6 +368,10 @@
         line-height: 1.2;
       }
 
+      .copy-error {
+        color: var(--danger);
+      }
+
       @media (max-width: 900px) {
         .shell,
         .preview,
@@ -307,11 +389,12 @@
 
         <h2 class="section-label">Presets</h2>
         <div class="preset-row">
-          <button data-preset="exec">Execution Coach</button>
-          <button data-preset="design">Design Iteration</button>
-          <button data-preset="prompt">Prompt Fluency</button>
-          <button data-preset="rules">Rules Export</button>
+          <button data-preset="exec" aria-pressed="false">Execution Coach</button>
+          <button data-preset="design" aria-pressed="false">Design Iteration</button>
+          <button data-preset="prompt" aria-pressed="false">Prompt Fluency</button>
+          <button data-preset="rules" aria-pressed="false">Rules Export</button>
         </div>
+        <button class="secondary" id="reset" type="button">Reset brief</button>
 
         <label>
           Coaching tone
@@ -333,8 +416,12 @@
         </label>
 
         <label>
-          Evidence strictness
+          <span class="field-topline">
+            <span>Evidence strictness</span>
+            <output id="strictnessValue" for="strictness">4/5</output>
+          </span>
           <input id="strictness" type="range" min="1" max="5" value="4" />
+          <span class="field-note" id="strictnessNote">Label weak evidence</span>
         </label>
 
         <label>
@@ -345,31 +432,31 @@
 
       <main>
         <section class="preview">
-          <article class="card">
+          <article class="workbench-readout">
             <span class="pill">Coach's read</span>
             <h2 class="read-title" id="readTitle">Execution-heavy, proof-hungry workflow</h2>
             <p id="narrative"></p>
           </article>
           <article class="card">
-            <span class="pill">At a glance</span>
+            <span class="pill">Signals</span>
             <div class="glance" id="glance"></div>
           </article>
         </section>
 
-        <section class="card">
+        <section class="signal-panel">
           <span class="pill">Generated rules</span>
           <div id="rules"></div>
         </section>
 
-        <section class="card">
-          <span class="pill">Effectiveness dashboard</span>
+        <section class="signal-panel">
+          <span class="pill">Effectiveness signals</span>
           <div class="metric-grid" id="metrics"></div>
         </section>
 
         <section class="prompt-box">
           <div class="prompt-head">
             <h2 class="prompt-title">Prompt to use in the analyzer</h2>
-            <button class="primary" id="copy">Copy</button>
+            <button class="primary" id="copy">Copy prompt</button>
           </div>
           <pre id="prompt"></pre>
         </section>
@@ -395,6 +482,8 @@
         tone: document.getElementById("tone"),
         outcome: document.getElementById("outcome"),
         strictness: document.getElementById("strictness"),
+        strictnessValue: document.getElementById("strictnessValue"),
+        strictnessNote: document.getElementById("strictnessNote"),
         friction: document.getElementById("friction"),
         narrative: document.getElementById("narrative"),
         glance: document.getElementById("glance"),
@@ -402,6 +491,8 @@
         metrics: document.getElementById("metrics"),
         prompt: document.getElementById("prompt"),
         copy: document.getElementById("copy"),
+        reset: document.getElementById("reset"),
+        presetButtons: document.querySelectorAll("[data-preset]"),
       };
 
       function syncControls() {
@@ -411,9 +502,19 @@
         elements.friction.value = state.friction;
       }
 
+      function strictnessLabel(strict) {
+        if (strict >= 5) return "5/5: demand proof";
+        if (strict >= 4) return "4/5: label weak evidence";
+        if (strict >= 3) return "3/5: balanced coaching";
+        return `${strict}/5: exploratory read`;
+      }
+
       function updateAll() {
         const strict = Number(state.strictness);
         const toneLabel = state.tone === "sharp" ? "blunt but useful" : state.tone === "gentle" ? "encouraging" : "direct and kind";
+        const strictLabel = strictnessLabel(strict);
+        elements.strictnessValue.value = `${strict}/5`;
+        elements.strictnessNote.textContent = strictLabel.replace(/^\d\/5: /, "");
         elements.narrative.textContent = `Use a ${toneLabel} voice. Treat the raw counts as evidence, then explain the working style, the likely root causes, and the next behavior change without pretending weak signals are certain.`;
         replaceChildren(
           elements.glance,
@@ -440,9 +541,15 @@
         parent.replaceChildren(...children);
       }
 
+      function markPreset(activePreset) {
+        elements.presetButtons.forEach((button) => {
+          button.setAttribute("aria-pressed", button.dataset.preset === activePreset ? "true" : "false");
+        });
+      }
+
       function createGlanceCard(title, body) {
         const article = document.createElement("article");
-        article.className = "card";
+        article.className = "glance-card";
         const strong = document.createElement("strong");
         strong.textContent = title;
         const paragraph = document.createElement("p");
@@ -508,20 +615,51 @@
           updateAll();
         });
       }
-      document.querySelectorAll("[data-preset]").forEach((button) => {
+      elements.presetButtons.forEach((button) => {
         button.addEventListener("click", () => {
           Object.assign(state, defaults, presets[button.dataset.preset]);
+          markPreset(button.dataset.preset);
           syncControls();
           updateAll();
         });
       });
+      elements.reset.addEventListener("click", () => {
+        Object.assign(state, defaults);
+        markPreset("");
+        syncControls();
+        updateAll();
+      });
       elements.copy.addEventListener("click", async () => {
-        await navigator.clipboard.writeText(elements.prompt.textContent);
-        elements.copy.textContent = "Copied!";
-        setTimeout(() => (elements.copy.textContent = "Copy"), 900);
+        const original = elements.copy.textContent;
+        elements.copy.classList.remove("copy-error");
+        try {
+          if (navigator.clipboard && window.isSecureContext) {
+            await navigator.clipboard.writeText(elements.prompt.textContent);
+          } else {
+            const textarea = document.createElement("textarea");
+            textarea.value = elements.prompt.textContent;
+            textarea.setAttribute("readonly", "");
+            textarea.style.position = "fixed";
+            textarea.style.left = "-9999px";
+            document.body.appendChild(textarea);
+            textarea.select();
+            document.execCommand("copy");
+            textarea.remove();
+          }
+          elements.copy.textContent = "Copied";
+        } catch {
+          elements.copy.textContent = "Copy failed";
+          elements.copy.classList.add("copy-error");
+        } finally {
+          setTimeout(() => {
+            elements.copy.textContent = original;
+            elements.copy.classList.remove("copy-error");
+          }, 1400);
+        }
       });
 
       syncControls();
+      markPreset("");
       updateAll();
     </script>
   </body>

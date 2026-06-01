@@ -392,11 +392,14 @@ test("renderers include required report sections", () => {
   assert.match(html, /Why this artifact/);
   assert.match(html, /Source:/);
   assert.match(html, /data-copy-text/);
+  assert.match(html, /aria-live="polite"/);
   assert.match(html, /Copy prompt/);
   assert.match(html, /--font-sans:/);
+  assert.match(html, /--focus-ring:/);
   assert.match(html, /--text-display: 1\.75rem/);
   assert.match(html, /font-size: var\(--text-display\)/);
   assert.match(html, /font-variant-numeric: tabular-nums/);
+  assert.match(html, /\.copy-button:focus-visible/);
   assert.doesNotMatch(html, /Suggested Instruction Changes/);
   assert.match(markdown, /Top Actions/);
   assert.match(markdown, /Evidence/);

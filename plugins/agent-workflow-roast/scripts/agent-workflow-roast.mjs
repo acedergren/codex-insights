@@ -2345,7 +2345,7 @@ function coachSignal(label, body, badge) {
 }
 
 function copyButton(value, label = "Copy") {
-  return `<button type="button" class="copy-button" data-copy-text="${escapeHtml(value || "")}" aria-label="${escapeHtml(label)}">${escapeHtml(label)}</button>`;
+  return `<button type="button" class="copy-button" data-copy-text="${escapeHtml(value || "")}" aria-label="${escapeHtml(label)}" aria-live="polite">${escapeHtml(label)}</button>`;
 }
 
 function renderArtifactQueue(stats, insights) {

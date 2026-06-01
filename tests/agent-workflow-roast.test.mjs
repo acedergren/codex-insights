@@ -378,7 +378,12 @@ test("renderers include required report sections", () => {
 
   assert.match(html, /Coaching targets/);
   assert.doesNotMatch(html, /Top Improvements/);
-  assert.match(html, /Good \/ Bad \/ Ugly/);
+  assert.match(html, /Start Here/);
+  assert.match(html, /Open top actions/);
+  assert.match(html, /Workflow Read/);
+  assert.doesNotMatch(html, /Good \/ Bad \/ Ugly/);
+  assert.doesNotMatch(html, />Bad</);
+  assert.doesNotMatch(html, />Ugly</);
   assert.match(html, /Do first/);
   assert.match(html, /Coaching Targets/);
   assert.match(html, /token spend scenario/);
@@ -394,6 +399,9 @@ test("renderers include required report sections", () => {
   assert.match(html, /data-copy-text/);
   assert.match(html, /aria-live="polite"/);
   assert.match(html, /Copy prompt/);
+  assert.match(html, /View full prompt/);
+  assert.match(html, /class="prompt-detail"/);
+  assert.match(html, /class="metric-status">proxy/);
   assert.match(html, /--font-sans:/);
   assert.match(html, /--focus-ring:/);
   assert.match(html, /--text-display: 1\.75rem/);
@@ -409,7 +417,7 @@ test("renderers include required report sections", () => {
   assert.match(markdown, /Prompt Quality/);
 });
 
-test("Good Bad Ugly cards do not repeat Coach's Read text verbatim", () => {
+test("workflow read cards do not repeat Coach's Read text verbatim", () => {
   const stats = analyzeRows([
     { timestamp: new Date().toISOString(), cwd: "/tmp/agent-workflow-roast", content: "blocked retry missing proof" },
   ]);
@@ -426,7 +434,7 @@ test("Good Bad Ugly cards do not repeat Coach's Read text verbatim", () => {
     voiceReview: applyVoiceContract(insights).review,
     insights,
   });
-  const goodBadUgly = sectionText(html, "good-bad-ugly");
+  const workflowRead = sectionText(html, "workflow-read");
   const coachRead = sectionText(html, "coach-s-read");
 
   assert.equal(coachRead.includes(insights.roast), true);
@@ -437,9 +445,9 @@ test("Good Bad Ugly cards do not repeat Coach's Read text verbatim", () => {
     insights.atAGlance.ambitious,
     insights.roast,
   ]) {
-    assert.equal(goodBadUgly.includes(repeated), false, repeated);
+    assert.equal(workflowRead.includes(repeated), false, repeated);
   }
-  assert.match(goodBadUgly, /Roast stays valid|repeat archaeology/);
+  assert.match(workflowRead, /Roast stays valid|repeat archaeology/);
   assert.equal(coachRead.includes("Roast stays valid"), false);
 });
 

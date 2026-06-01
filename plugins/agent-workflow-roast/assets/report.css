@@ -523,6 +523,10 @@ h2 {
   margin: 14px 24px 0;
 }
 
+.start-here-panel {
+  margin: 14px 24px 0;
+}
+
 .effectiveness-panel {
   margin: 14px 24px 0;
 }
@@ -545,6 +549,69 @@ h2 {
   grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 12px;
   padding: 0 18px 18px;
+}
+
+.start-here-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.25fr) minmax(220px, 0.72fr) minmax(220px, 0.72fr);
+  gap: 12px;
+  padding: 0 18px 18px;
+}
+
+.start-here-grid article {
+  min-width: 0;
+  padding: 14px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--soft);
+}
+
+.start-here-action {
+  background: #f2f7ff;
+  border-color: #cfe0f7;
+}
+
+.start-label,
+.metric-status {
+  display: inline-flex;
+  width: fit-content;
+  min-height: 24px;
+  padding: 3px 8px;
+  border: 1px solid #cfe0f7;
+  border-radius: 6px;
+  color: var(--blue);
+  background: #f7fbff;
+  font-size: var(--text-caption);
+  font-weight: 760;
+  line-height: 1.2;
+}
+
+.start-here-grid h3,
+.start-here-grid strong {
+  display: block;
+  margin: 10px 0 6px;
+  color: #111827;
+  font-size: var(--text-body);
+}
+
+.start-here-grid p {
+  margin: 0;
+  color: var(--muted);
+  font-size: var(--text-label);
+  line-height: 1.45;
+}
+
+.inline-action {
+  display: inline-flex;
+  margin-top: 10px;
+  color: var(--blue);
+  font-size: var(--text-label);
+  font-weight: 760;
+  text-decoration: none;
+}
+
+.inline-action:hover {
+  text-decoration: underline;
 }
 
 .gbu-card {
@@ -667,6 +734,17 @@ h2 {
   max-width: none;
   width: 100%;
   margin-top: 10px;
+}
+
+.prompt-detail {
+  margin-top: 10px;
+}
+
+.prompt-detail summary {
+  color: var(--blue);
+  font-size: var(--text-caption);
+  font-weight: 760;
+  cursor: pointer;
 }
 
 .effectiveness-grid {
@@ -857,6 +935,13 @@ h2 {
   justify-content: space-between;
   gap: 10px;
   margin-bottom: 8px;
+}
+
+.metric-status {
+  margin-bottom: 8px;
+  color: #526782;
+  background: #fff;
+  border-color: var(--line);
 }
 
 .metric-row strong {
@@ -1264,6 +1349,7 @@ code {
   .details-grid,
   .coach-grid,
   .friction-coaching,
+  .start-here-grid,
   .gbu-grid,
   .artifact-list,
   .signal-list,

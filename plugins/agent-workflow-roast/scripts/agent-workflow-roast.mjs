@@ -1370,9 +1370,16 @@ function reportSubtitle(report) {
 export function renderHtml(report) {
   const template = readFileSync(join(ROOT_DIR, "templates", "report.html"), "utf8");
   const css = readFileSync(join(ROOT_DIR, "assets", "report.css"), "utf8");
+  const startHere = panel(
+    "Start Here",
+    '<p class="subtle">The shortest path through the report: action, signal, proof</p>',
+    renderStartHere(report),
+    "panel start-here-panel",
+  );
+
   const coachingHeader = panel(
-    "Good / Bad / Ugly",
-    '<p class="subtle">The blunt read before the details</p>',
+    "Workflow Read",
+    '<p class="subtle">The blunt coaching read before the details</p>',
     renderGoodBadUgly(report),
     "panel coaching-strip-panel",
   );
@@ -1419,7 +1426,7 @@ export function renderHtml(report) {
     .replaceAll("{{title}}", escapeHtml(report.title))
     .replace("{{subtitle}}", escapeHtml(reportSubtitle(report)))
     .replace("{{css}}", css)
-    .replace("{{coachingHeader}}", coachingHeader)
+    .replace("{{coachingHeader}}", startHere + coachingHeader)
     .replace("{{effectiveness}}", effectiveness)
     .replace("{{coaching}}", coaching)
     .replace("{{artifactQueue}}", artifactQueue)
@@ -2303,10 +2310,38 @@ function renderGoodBadUgly(report) {
   const secondSignal = signals[1];
   const firstAction = actions[0] || buildArtifactQueue(stats, insights)[0] || {};
   return `<div class="gbu-grid">
-    ${coachSignal("Good", gbuGood(stats), "Keep")}
-    ${coachSignal("Bad", gbuBad(topSignal), "Fix")}
-    ${coachSignal("Ugly", gbuUgly(insights, secondSignal || topSignal), "Roast")}
+    ${coachSignal("Working", gbuGood(stats), "Keep")}
+    ${coachSignal("Dragging", gbuBad(topSignal), "Focus")}
+    ${coachSignal("Watch", gbuUgly(insights, secondSignal || topSignal), "Watch")}
     ${coachSignal("Do first", gbuDoFirst(firstAction), "Do first")}
+  </div>`;
+}
+
+function renderStartHere(report) {
+  const stats = report.stats || {};
+  const insights = report.insights || {};
+  const signals = report.signals || buildSignals(stats);
+  const actions = report.recommendations || insights.recommendations || buildArtifactQueue(stats, insights);
+  const firstAction = actions[0] || {};
+  const topSignal = signals[0] || {};
+  return `<div class="start-here-grid">
+    <article class="start-here-action">
+      <span class="start-label">Do first</span>
+      <h3>${escapeHtml(firstAction.title || "Create the first durable workflow artifact")}</h3>
+      <p>${escapeHtml(firstAction.rationale || "Start with the smallest reusable artifact that removes the top recurring workflow drag.")}</p>
+      <a class="inline-action" href="#top-actions">Open top actions</a>
+    </article>
+    <article>
+      <span class="start-label">Top signal</span>
+      <strong>${escapeHtml(topSignal.label || "No dominant signal yet")}</strong>
+      <p>${escapeHtml(topSignal.coaching || topSignal.description || "Use the evidence section to decide what changed and what should be checked next.")}</p>
+    </article>
+    <article>
+      <span class="start-label">Proof source</span>
+      <strong>${escapeHtml((topSignal.sourceKinds || []).join(", ") || "Evidence section")}</strong>
+      <p>Validate the recommendation against the source-backed receipts before changing durable workflow rules.</p>
+      <a class="inline-action" href="#evidence">Open evidence</a>
+    </article>
   </div>`;
 }
 
@@ -2360,7 +2395,10 @@ function renderArtifactQueue(stats, insights) {
       <p><strong>Target:</strong> ${escapeHtml(item.target || "project")}</p>
       <p><strong>Why this artifact:</strong> ${escapeHtml(item.rationale || "This is the smallest durable place for the workflow rule.")}</p>
       ${copyButton(item.prompt || "", "Copy prompt")}
-      <code>${escapeHtml(item.prompt || "")}</code>
+      <details class="prompt-detail">
+        <summary>View full prompt</summary>
+        <code>${escapeHtml(item.prompt || "")}</code>
+      </details>
     </article>`,
   )}</div>`;
 }
@@ -2415,6 +2453,7 @@ function renderEffectivenessDashboard(metrics, stats = {}) {
         .map(
           (item) => `<article class="effectiveness-card">
             <div class="metric-row"><strong>${escapeHtml(item.label)}</strong><span>${escapeHtml(clampScore(item.value))}</span></div>
+            <span class="metric-status">${escapeHtml(metricStatus(item))}</span>
             <div class="bar"><span style="width: ${escapeHtml(clampScore(item.value))}%"></span></div>
             <p>${escapeHtml(item.detail)}</p>
             <code>${escapeHtml(item.coaching)}</code>
@@ -2423,6 +2462,11 @@ function renderEffectivenessDashboard(metrics, stats = {}) {
         .join("")}
     </div>
   </div>`;
+}
+
+function metricStatus(item = {}) {
+  if (/proxy|estimated|fallback/i.test(`${item.detail || ""} ${item.coaching || ""}`)) return "proxy";
+  return "coaching score";
 }
 
 function renderTokenSpendChart(tokenSpend) {

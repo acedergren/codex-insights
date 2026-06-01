@@ -50,7 +50,9 @@ This file applies to the entire `codex-insights` repository.
 - Plugin runs generate `agent-workflow-roast.html` through `plugins/agent-workflow-roast/scripts/agent-workflow-roast.mjs`, `plugins/agent-workflow-roast/templates/report.html`, and `plugins/agent-workflow-roast/assets/report.css`.
 - Lasting generated-report UI changes belong in `templates/report.html`, `assets/report.css`, or renderer code in `agent-workflow-roast.mjs`, not in generated `agent-workflow-roast.html`.
 - The coaching playground at `plugins/agent-workflow-roast/playgrounds/roast-coach-playground.html` is a source playground for prompt/design iteration. Changes there do not affect generated roast reports unless the corresponding template/CSS/renderer changes are also made.
-- When changing generated report UI, add or update tests around `renderHtml()` and run the safe smoke test with `npm run roast -- --no-ai --no-open --output-dir .`; inspect the generated `agent-workflow-roast.html` but do not commit it.
+- When applying `$impeccable` or other design feedback to generated report assets, first make the source change in `assets/report.css`, `templates/report.html`, or renderer helpers, then add or update `renderHtml()` assertions proving the generated HTML contains the intended classes, tokens, or markup.
+- After source and tests are updated, run `npm run roast -- --no-ai --no-open --output-dir .` and inspect the generated `agent-workflow-roast.html` as evidence. For design anti-pattern checks, run the detector against the generated HTML, not just the source CSS or playground.
+- Do not stage or commit the generated `agent-workflow-roast.html`; keep commits to source, tests, and intentional docs.
 
 ## Git Expectations
 

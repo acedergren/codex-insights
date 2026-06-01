@@ -403,6 +403,7 @@ test("renderers include required report sections", () => {
   assert.match(html, /View full prompt/);
   assert.match(html, /class="prompt-detail"/);
   assert.match(html, /prompt-detail summary:focus-visible/);
+  assert.match(html, /prompt-detail\[open\] summary/);
   assert.match(html, /overflow-wrap: anywhere/);
   assert.match(html, /dir="auto"/);
   assert.match(html, /class="metric-status">proxy/);
@@ -412,6 +413,10 @@ test("renderers include required report sections", () => {
   assert.match(html, /font-size: var\(--text-display\)/);
   assert.match(html, /font-variant-numeric: tabular-nums/);
   assert.match(html, /\.copy-button:focus-visible/);
+  assert.match(html, /prefers-reduced-motion: reduce/);
+  assert.match(html, /min-height: 44px/);
+  assert.match(html, /@media print/);
+  assert.match(html, /break-inside: avoid/);
   assert.doesNotMatch(html, /Suggested Instruction Changes/);
   assert.match(markdown, /Top Actions/);
   assert.match(markdown, /Evidence/);

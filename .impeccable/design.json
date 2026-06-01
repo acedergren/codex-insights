@@ -98,7 +98,7 @@
       "refersTo": "button-primary",
       "description": "Use for the main action in a compact tool surface.",
       "html": "<button class=\"ds-btn-primary\">Generate report</button>",
-      "css": ".ds-btn-primary { min-height: 38px; padding: 0 10px; border: 1px solid #3a7ee3; border-radius: 7px; background: #1f5fbf; color: #eef5ff; font: 700 0.88rem/1.2 Inter, ui-sans-serif, system-ui, sans-serif; cursor: pointer; transition: background-color 150ms ease-out, border-color 150ms ease-out; } .ds-btn-primary:hover { background: #2f6fd6; border-color: #65a3ff; } .ds-btn-primary:focus-visible { outline: 3px solid rgb(101 163 255 / 0.35); outline-offset: 2px; }"
+      "css": ".ds-btn-primary { min-height: 38px; padding: 0 10px; border: 1px solid #3a7ee3; border-radius: 7px; background: #1f5fbf; color: #eef5ff; font: 700 0.875rem/1.2 Inter, ui-sans-serif, system-ui, sans-serif; cursor: pointer; transition: background-color 150ms ease-out, border-color 150ms ease-out; } .ds-btn-primary:hover { background: #2f6fd6; border-color: #65a3ff; } .ds-btn-primary:focus-visible { outline: 3px solid rgb(101 163 255 / 0.35); outline-offset: 2px; }"
     },
     {
       "name": "Quick Nav Link",
@@ -122,7 +122,7 @@
       "refersTo": "panel-card",
       "description": "Use for major evidence and coaching sections.",
       "html": "<section class=\"ds-report-panel\"><div class=\"ds-panel-head\"><h2>Coach read</h2><p>Evidence-backed summary</p></div><div class=\"ds-panel-body\">Direct, useful coaching belongs here.</div></section>",
-      "css": ".ds-report-panel { max-width: 520px; border: 1px solid #dfe6ef; border-radius: 8px; background: #ffffff; color: #121827; box-shadow: 0 10px 24px rgb(17 24 39 / 0.04); font-family: Inter, ui-sans-serif, system-ui, sans-serif; } .ds-panel-head { padding: 18px 20px 8px; } .ds-panel-head h2 { margin: 0 0 4px; font-size: 1rem; line-height: 1.25; } .ds-panel-head p { margin: 0; color: #62708a; font-size: 0.82rem; } .ds-panel-body { padding: 10px 20px 20px; font-size: 0.88rem; line-height: 1.5; }"
+      "css": ".ds-report-panel { max-width: 520px; border: 1px solid #dfe6ef; border-radius: 8px; background: #ffffff; color: #121827; box-shadow: 0 10px 24px rgb(17 24 39 / 0.04); font-family: Inter, ui-sans-serif, system-ui, sans-serif; } .ds-panel-head { padding: 18px 20px 8px; } .ds-panel-head h2 { margin: 0 0 4px; font-size: 1.25rem; line-height: 1.2; } .ds-panel-head p { margin: 0; color: #62708a; font-size: 0.875rem; line-height: 1.5; } .ds-panel-body { padding: 10px 20px 20px; font-size: 1rem; line-height: 1.5; }"
     },
     {
       "name": "Dark Text Field",
@@ -130,7 +130,7 @@
       "refersTo": "input-dark",
       "description": "Use in the playground for prompt and configuration inputs.",
       "html": "<label class=\"ds-field\"><span>Coaching tone</span><input class=\"ds-input\" value=\"Direct and kind\" /></label>",
-      "css": ".ds-field { display: grid; gap: 8px; max-width: 320px; color: #9fb0c4; font: 0.9rem/1.35 Inter, ui-sans-serif, system-ui, sans-serif; } .ds-input { width: 100%; min-height: 38px; padding: 0 10px; border: 1px solid #26364a; border-radius: 7px; background: #172333; color: #eef5ff; font: inherit; } .ds-input:hover { border-color: #3a4d66; } .ds-input:focus-visible { outline: 3px solid rgb(101 163 255 / 0.28); outline-offset: 2px; border-color: #65a3ff; }"
+      "css": ".ds-field { display: grid; gap: 8px; max-width: 320px; color: #9fb0c4; font: 650 0.875rem/1.35 Inter, ui-sans-serif, system-ui, sans-serif; } .ds-input { width: 100%; min-height: 38px; padding: 0 10px; border: 1px solid #26364a; border-radius: 7px; background: #172333; color: #eef5ff; font: inherit; } .ds-input:hover { border-color: #3a4d66; } .ds-input:focus-visible { outline: 3px solid rgb(101 163 255 / 0.28); outline-offset: 2px; border-color: #65a3ff; }"
     },
     {
       "name": "Metric Row",
@@ -138,7 +138,7 @@
       "refersTo": "panel-card",
       "description": "Use for compact measured signals with an icon, value, and explanation.",
       "html": "<div class=\"ds-metric-row\"><span class=\"ds-metric-icon\">42</span><div><h3>Friction markers</h3><p>Grouped across recent sessions.</p></div><strong>12</strong></div>",
-      "css": ".ds-metric-row { display: grid; grid-template-columns: 50px minmax(0, 1fr) auto; gap: 14px; align-items: center; max-width: 520px; padding: 18px 20px; background: #ffffff; color: #121827; font-family: Inter, ui-sans-serif, system-ui, sans-serif; } .ds-metric-icon { display: inline-grid; place-items: center; width: 50px; height: 50px; border-radius: 999px; background: #ebf2ff; color: #2f6fd6; font-weight: 820; } .ds-metric-row h3 { margin: 0 0 2px; font-size: 0.86rem; } .ds-metric-row p { margin: 0; color: #62708a; font-size: 0.76rem; } .ds-metric-row strong { font-size: 1.65rem; line-height: 1; }"
+      "css": ".ds-metric-row { display: grid; grid-template-columns: 50px minmax(0, 1fr) auto; gap: 14px; align-items: center; max-width: 520px; padding: 18px 20px; background: #ffffff; color: #121827; font-family: Inter, ui-sans-serif, system-ui, sans-serif; } .ds-metric-icon { display: inline-grid; place-items: center; width: 50px; height: 50px; border-radius: 999px; background: #ebf2ff; color: #2f6fd6; font-weight: 820; } .ds-metric-row h3 { margin: 0 0 2px; font-size: 0.875rem; line-height: 1.25; } .ds-metric-row p { margin: 0; color: #62708a; font-size: 0.75rem; } .ds-metric-row strong { font-size: 1.75rem; line-height: 1; font-variant-numeric: tabular-nums; }"
     }
   ],
   "narrative": {

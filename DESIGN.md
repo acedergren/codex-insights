@@ -25,15 +25,15 @@ colors:
 typography:
   headline:
     fontFamily: "Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif"
-    fontSize: "clamp(1.55rem, 3vw, 2.35rem)"
+    fontSize: "1.75rem"
     fontWeight: 700
-    lineHeight: 1.08
+    lineHeight: 1.15
     letterSpacing: "0"
   title:
     fontFamily: "Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif"
-    fontSize: "1rem"
+    fontSize: "1.25rem"
     fontWeight: 700
-    lineHeight: 1.25
+    lineHeight: 1.2
     letterSpacing: "0"
   body:
     fontFamily: "Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif"
@@ -49,7 +49,7 @@ typography:
     letterSpacing: "0"
   mono-label:
     fontFamily: "ui-monospace, SFMono-Regular, Menlo, Consolas, monospace"
-    fontSize: "0.86rem"
+    fontSize: "0.875rem"
     fontWeight: 760
     lineHeight: 1.2
     letterSpacing: "0"
@@ -160,11 +160,11 @@ The palette is a restrained product palette: cool neutral surfaces, dark ink, on
 
 ### Hierarchy
 
-- **Display** (700, clamp(1.55rem, 3vw, 2.35rem), 1.08): Report titles only. Keep the clamp modest and never use hero-sized product marketing type.
-- **Headline** (700, 1.1rem to 1.65rem, 1.2): Metric values, node centers, and high-importance report summaries.
-- **Title** (700, 1rem, 1.25): Panel headings and section titles.
-- **Body** (400, 0.84rem to 0.98rem, 1.35 to 1.5): Report prose, evidence notes, and descriptions. Cap long prose at 65 to 75 characters where layout allows.
-- **Label** (690 to 760, 0.72rem to 0.86rem, 1.2): Badges, nav links, controls, compact metadata, and command labels.
+- **Display** (700, 1.75rem, 1.15): Page titles, primary preview titles, and first-read report summaries. Use fixed product UI sizing, not fluid marketing type.
+- **Headline** (700, 1.25rem to 1.75rem, 1.15 to 1.2): Metric values, node centers, and high-importance report summaries.
+- **Title** (700, 1.25rem, 1.2): Panel headings and section titles.
+- **Body** (400, 1rem, 1.45 to 1.55): Report prose, evidence notes, prompts, and generated descriptions. Cap long prose at 65 to 75 characters where layout allows.
+- **Label** (650 to 760, 0.75rem to 0.875rem, 1.2 to 1.35): Badges, nav links, controls, compact metadata, and command labels.
 
 ### Named Rules
 

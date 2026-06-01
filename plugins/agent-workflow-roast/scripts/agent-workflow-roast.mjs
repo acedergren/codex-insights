@@ -1404,7 +1404,7 @@ export function renderHtml(report) {
   const artifactQueue = panel(
     "Top Actions",
     '<p class="subtle">One canonical list. Copy the prompt, run it in the target repo, and make the habit durable.</p>',
-    renderArtifactQueue(report.stats, report.insights),
+    renderArtifactQueue(report.stats, report.insights, report.recommendations),
     "panel artifact-queue-panel",
   );
 
@@ -2327,18 +2327,18 @@ function renderStartHere(report) {
   return `<div class="start-here-grid">
     <article class="start-here-action">
       <span class="start-label">Do first</span>
-      <h3>${escapeHtml(firstAction.title || "Create the first durable workflow artifact")}</h3>
-      <p>${escapeHtml(firstAction.rationale || "Start with the smallest reusable artifact that removes the top recurring workflow drag.")}</p>
+      <h3 dir="auto">${escapeHtml(firstAction.title || "Create the first durable workflow artifact")}</h3>
+      <p dir="auto">${escapeHtml(firstAction.rationale || "Start with the smallest reusable artifact that removes the top recurring workflow drag.")}</p>
       <a class="inline-action" href="#top-actions">Open top actions</a>
     </article>
     <article>
       <span class="start-label">Top signal</span>
-      <strong>${escapeHtml(topSignal.label || "No dominant signal yet")}</strong>
-      <p>${escapeHtml(topSignal.coaching || topSignal.description || "Use the evidence section to decide what changed and what should be checked next.")}</p>
+      <strong dir="auto">${escapeHtml(topSignal.label || "No dominant signal yet")}</strong>
+      <p dir="auto">${escapeHtml(topSignal.coaching || topSignal.description || "Use the evidence section to decide what changed and what should be checked next.")}</p>
     </article>
     <article>
       <span class="start-label">Proof source</span>
-      <strong>${escapeHtml((topSignal.sourceKinds || []).join(", ") || "Evidence section")}</strong>
+      <strong dir="auto">${escapeHtml((topSignal.sourceKinds || []).join(", ") || "Evidence section")}</strong>
       <p>Validate the recommendation against the source-backed receipts before changing durable workflow rules.</p>
       <a class="inline-action" href="#evidence">Open evidence</a>
     </article>
@@ -2380,24 +2380,26 @@ function coachSignal(label, body, badge) {
 }
 
 function copyButton(value, label = "Copy") {
-  return `<button type="button" class="copy-button" data-copy-text="${escapeHtml(value || "")}" aria-label="${escapeHtml(label)}" aria-live="polite">${escapeHtml(label)}</button>`;
+  const copyText = String(value || "");
+  const disabled = copyText.trim() ? "" : ' disabled aria-disabled="true"';
+  return `<button type="button" class="copy-button" data-copy-text="${escapeHtml(copyText)}" aria-label="${escapeHtml(label)}" aria-live="polite"${disabled}>${escapeHtml(label)}</button>`;
 }
 
-function renderArtifactQueue(stats, insights) {
+function renderArtifactQueue(stats, insights, recommendations = null) {
   return `<div class="artifact-list">${listOrEmpty(
-    buildArtifactQueue(stats, insights),
+    recommendations || buildArtifactQueue(stats, insights),
     (item, index) => `<article class="artifact-card">
       <div class="artifact-topline">
         <span class="artifact-priority">P${escapeHtml(index + 1)}</span>
         <span class="artifact-badge">${escapeHtml(item.artifact || "artifact")}</span>
       </div>
-      <h3>${escapeHtml(item.title || "Workflow artifact")}</h3>
-      <p><strong>Target:</strong> ${escapeHtml(item.target || "project")}</p>
-      <p><strong>Why this artifact:</strong> ${escapeHtml(item.rationale || "This is the smallest durable place for the workflow rule.")}</p>
+      <h3 dir="auto">${escapeHtml(item.title || "Workflow artifact")}</h3>
+      <p dir="auto"><strong>Target:</strong> ${escapeHtml(item.target || "project")}</p>
+      <p dir="auto"><strong>Why this artifact:</strong> ${escapeHtml(item.rationale || "This is the smallest durable place for the workflow rule.")}</p>
       ${copyButton(item.prompt || "", "Copy prompt")}
       <details class="prompt-detail">
-        <summary>View full prompt</summary>
-        <code>${escapeHtml(item.prompt || "")}</code>
+        <summary aria-label="View full prompt for ${escapeHtml(item.title || "workflow artifact")}">View full prompt</summary>
+        <code dir="auto">${escapeHtml(item.prompt || "")}</code>
       </details>
     </article>`,
   )}</div>`;

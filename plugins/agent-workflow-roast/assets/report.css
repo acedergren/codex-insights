@@ -138,7 +138,9 @@ body {
 }
 
 .quick-nav a:focus-visible,
-.copy-button:focus-visible {
+.copy-button:focus-visible,
+.inline-action:focus-visible,
+.prompt-detail summary:focus-visible {
   outline: 3px solid color-mix(in srgb, var(--focus-ring) 38%, transparent);
   outline-offset: 2px;
 }
@@ -566,6 +568,16 @@ h2 {
   background: var(--soft);
 }
 
+.start-here-grid article,
+.gbu-card,
+.artifact-card,
+.effectiveness-card,
+.signal-card,
+.memory-evidence {
+  overflow-wrap: anywhere;
+  hyphens: auto;
+}
+
 .start-here-action {
   background: #f2f7ff;
   border-color: #cfe0f7;
@@ -713,6 +725,13 @@ h2 {
   background: #e8f1ff;
 }
 
+.copy-button:disabled,
+.copy-button[aria-busy="true"] {
+  cursor: not-allowed;
+  opacity: 0.68;
+  transform: none;
+}
+
 .copy-button:active {
   transform: translateY(1px);
 }
@@ -745,6 +764,7 @@ h2 {
   font-size: var(--text-caption);
   font-weight: 760;
   cursor: pointer;
+  width: fit-content;
 }
 
 .effectiveness-grid {

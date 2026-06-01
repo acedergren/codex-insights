@@ -398,9 +398,13 @@ test("renderers include required report sections", () => {
   assert.match(html, /Source:/);
   assert.match(html, /data-copy-text/);
   assert.match(html, /aria-live="polite"/);
+  assert.match(html, /aria-busy/);
   assert.match(html, /Copy prompt/);
   assert.match(html, /View full prompt/);
   assert.match(html, /class="prompt-detail"/);
+  assert.match(html, /prompt-detail summary:focus-visible/);
+  assert.match(html, /overflow-wrap: anywhere/);
+  assert.match(html, /dir="auto"/);
   assert.match(html, /class="metric-status">proxy/);
   assert.match(html, /--font-sans:/);
   assert.match(html, /--focus-ring:/);
@@ -415,6 +419,48 @@ test("renderers include required report sections", () => {
   assert.match(markdown, /Estimated enterprise API savings/);
   assert.match(markdown, /Why this artifact/);
   assert.match(markdown, /Prompt Quality/);
+});
+
+test("renderHtml hardens long bidi and empty copy content", () => {
+  const longToken = "SuperLongUnbrokenProjectName".repeat(12);
+  const stats = analyzeRows([{ timestamp: new Date().toISOString(), cwd: `/tmp/${longToken}`, content: "blocked retry" }]);
+  const insights = buildDeterministicInsights(stats, []);
+  insights.recommendations = [
+    {
+      title: `${longToken} שלום تجربة`,
+      artifact: "checklist",
+      target: `${longToken}/src/${longToken}.tsx`,
+      rationale: `Handle ${longToken} without layout overflow or direction bugs.`,
+      prompt: "",
+    },
+  ];
+  const html = renderHtml({
+    title: "Agent Workflow Roast",
+    stats,
+    memoryHits: [],
+    signals: [
+      {
+        id: "long-signal",
+        label: `${longToken} אות`,
+        count: 1,
+        confidence: "low",
+        description: `Long signal ${longToken}`,
+        coaching: `Check wrapping for ${longToken}`,
+        rule: `Do not let ${longToken} overflow`,
+        sourceKinds: ["prompt-proxy"],
+      },
+    ],
+    recommendations: insights.recommendations,
+    voiceReview: applyVoiceContract(insights).review,
+    insights,
+  });
+
+  assert.match(html, /dir="auto"/);
+  assert.match(html, /disabled aria-disabled="true"/);
+  assert.match(html, /SuperLongUnbrokenProjectName/);
+  assert.match(html, /שלום/);
+  assert.match(html, /overflow-wrap: anywhere/);
+  assert.doesNotMatch(html, /<script>SuperLong/);
 });
 
 test("workflow read cards do not repeat Coach's Read text verbatim", () => {

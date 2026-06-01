@@ -54,9 +54,14 @@
         document.addEventListener("click", async (event) => {
           const button = event.target.closest("[data-copy-text]");
           if (!button) return;
+          if (button.disabled) return;
           const original = button.textContent;
+          button.disabled = true;
+          button.setAttribute("aria-busy", "true");
           try {
-            await copyWithFallback(button.dataset.copyText || "");
+            const copyText = button.dataset.copyText || "";
+            if (!copyText.trim()) throw new Error("Nothing to copy");
+            await copyWithFallback(copyText);
             button.textContent = "Copied";
             button.dataset.copied = "true";
           } catch {
@@ -65,6 +70,8 @@
           } finally {
             window.setTimeout(() => {
               button.textContent = original;
+              button.disabled = false;
+              button.removeAttribute("aria-busy");
               delete button.dataset.copied;
             }, 1600);
           }

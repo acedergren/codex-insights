@@ -380,7 +380,9 @@ test("renderers include required report sections", () => {
   assert.doesNotMatch(html, /Top Improvements/);
   assert.match(html, /Start Here/);
   assert.match(html, /Open top actions/);
+  assert.match(html, /class="start-here-grid"/);
   assert.match(html, /Workflow Read/);
+  assert.match(html, /class="workflow-readout"/);
   assert.doesNotMatch(html, /Good \/ Bad \/ Ugly/);
   assert.doesNotMatch(html, />Bad</);
   assert.doesNotMatch(html, />Ugly</);
@@ -392,8 +394,16 @@ test("renderers include required report sections", () => {
   assert.match(html, /Measured:/);
   assert.match(html, /Coach&#39;s Read/);
   assert.match(html, /Top Actions/);
+  assert.match(html, /class="action-queue"/);
+  assert.match(html, /class="action-queue-item"/);
+  assert.doesNotMatch(html, /class="artifact-list"/);
+  assert.doesNotMatch(html, /class="artifact-card"/);
   assert.match(html, /Prompt Quality/);
   assert.match(html, /Evidence/);
+  assert.match(html, /class="receipt-ledger"/);
+  assert.match(html, /class="receipt-row"/);
+  assert.doesNotMatch(html, /class="signal-list"/);
+  assert.doesNotMatch(html, /class="signal-card"/);
   assert.match(html, /Why this artifact/);
   assert.match(html, /Source:/);
   assert.match(html, /data-copy-text/);

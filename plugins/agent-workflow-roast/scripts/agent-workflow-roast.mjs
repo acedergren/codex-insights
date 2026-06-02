@@ -2309,7 +2309,7 @@ function renderGoodBadUgly(report) {
   const topSignal = signals[0];
   const secondSignal = signals[1];
   const firstAction = actions[0] || buildArtifactQueue(stats, insights)[0] || {};
-  return `<div class="gbu-grid">
+  return `<div class="workflow-readout" aria-label="Workflow diagnosis readout">
     ${coachSignal("Working", gbuGood(stats), "Keep")}
     ${coachSignal("Dragging", gbuBad(topSignal), "Focus")}
     ${coachSignal("Watch", gbuUgly(insights, secondSignal || topSignal), "Watch")}
@@ -2386,9 +2386,9 @@ function copyButton(value, label = "Copy") {
 }
 
 function renderArtifactQueue(stats, insights, recommendations = null) {
-  return `<div class="artifact-list">${listOrEmpty(
+  return `<ol class="action-queue">${listOrEmpty(
     recommendations || buildArtifactQueue(stats, insights),
-    (item, index) => `<article class="artifact-card">
+    (item, index) => `<li class="action-queue-item">
       <div class="artifact-topline">
         <span class="artifact-priority">P${escapeHtml(index + 1)}</span>
         <span class="artifact-badge">${escapeHtml(item.artifact || "artifact")}</span>
@@ -2401,8 +2401,8 @@ function renderArtifactQueue(stats, insights, recommendations = null) {
         <summary aria-label="View full prompt for ${escapeHtml(item.title || "workflow artifact")}">View full prompt</summary>
         <code dir="auto">${escapeHtml(item.prompt || "")}</code>
       </details>
-    </article>`,
-  )}</div>`;
+    </li>`,
+  )}</ol>`;
 }
 
 function renderFrictionTable(friction) {
@@ -2625,9 +2625,9 @@ function renderEvidence(signals = [], memoryHits = [], stats = {}) {
         )
         .join("")}
     </div>
-    <div class="signal-list">${listOrEmpty(
+    <ol class="receipt-ledger">${listOrEmpty(
       signals,
-      (signal) => `<article class="signal-card">
+      (signal) => `<li class="receipt-row">
         <div class="signal-topline">
           <strong>${escapeHtml(signal.label)}</strong>
           <span>${escapeHtml(signal.count)} hits</span>
@@ -2638,8 +2638,8 @@ function renderEvidence(signals = [], memoryHits = [], stats = {}) {
         <small>Source: ${escapeHtml((signal.sourceKinds || []).join(", ") || "canonical fallback")} | Confidence: ${escapeHtml(
           signal.confidence || "low",
         )}</small>
-      </article>`,
-    )}</div>
+      </li>`,
+    )}</ol>
     ${
       memoryHits.length > 0
         ? `<div class="memory-evidence"><h3>Memory hints</h3>${memoryHits

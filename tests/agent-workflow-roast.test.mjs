@@ -410,6 +410,10 @@ test("renderers include required report sections", () => {
   assert.match(html, /--font-sans:/);
   assert.match(html, /--focus-ring:/);
   assert.match(html, /--text-display: 1\.75rem/);
+  assert.match(html, /--space-5: 24px/);
+  assert.match(html, /padding: var\(--space-5\)/);
+  assert.match(html, /margin: var\(--space-5\) var\(--space-6\) 0/);
+  assert.match(html, /gap: var\(--space-4\)/);
   assert.match(html, /font-size: var\(--text-display\)/);
   assert.match(html, /font-variant-numeric: tabular-nums/);
   assert.match(html, /\.copy-button:focus-visible/);

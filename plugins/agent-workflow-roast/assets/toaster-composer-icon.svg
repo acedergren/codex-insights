@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Toaster icon">
+  <defs>
+    <linearGradient id="toastBody" x1="18" y1="14" x2="46" y2="40" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#ffdca3" />
+      <stop offset="0.62" stop-color="#f59e0b" />
+      <stop offset="1" stop-color="#b45309" />
+    </linearGradient>
+    <linearGradient id="toasterBody" x1="14" y1="27" x2="50" y2="56" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#f8fafc" />
+      <stop offset="0.58" stop-color="#cbd5e1" />
+      <stop offset="1" stop-color="#64748b" />
+    </linearGradient>
+    <linearGradient id="heatGlow" x1="28" y1="42" x2="38" y2="52" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#fb923c" />
+      <stop offset="1" stop-color="#dc2626" />
+    </linearGradient>
+  </defs>
+  <rect width="64" height="64" rx="16" fill="#101923" />
+  <path d="M24 13c0-3 3-6 8-6s8 3 8 6v18H24V13Z" fill="url(#toastBody)" />
+  <path d="M28 13c0-1 1-2 4-2s4 1 4 2" fill="none" stroke="#fff4ce" stroke-width="3" stroke-linecap="round" />
+  <rect x="13" y="29" width="38" height="24" rx="8" fill="url(#toasterBody)" />
+  <rect x="18" y="33" width="28" height="4" rx="2" fill="#334155" opacity="0.48" />
+  <circle cx="42" cy="44" r="4" fill="#101923" opacity="0.78" />
+  <circle cx="42" cy="44" r="2" fill="#38bdf8" />
+  <path d="M22 43h13" fill="none" stroke="url(#heatGlow)" stroke-width="3" stroke-linecap="round" />
+  <path d="M18 53h28" fill="none" stroke="#0f172a" stroke-width="3" stroke-linecap="round" opacity="0.46" />
+  <path d="M15 56h8M41 56h8" fill="none" stroke="#0f172a" stroke-width="3" stroke-linecap="round" />
+  <path d="M51 35h4v11h-4" fill="none" stroke="#94a3b8" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" />
+  <path d="M20 24c-4-1-6-3-6-6M44 24c4-1 6-3 6-6" fill="none" stroke="#fb923c" stroke-width="3" stroke-linecap="round" />
+</svg>

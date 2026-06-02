@@ -831,8 +831,8 @@ test("marketplace catalog points at the installable plugin package", () => {
   assert.equal(existsSync("plugins/agent-workflow-roast/scripts/agent-workflow-roast.mjs"), true);
   assert.equal(existsSync("plugins/agent-workflow-roast/skills/roast/SKILL.md"), true);
   assert.equal(existsSync("plugins/agent-workflow-roast/skills/coachs-read/SKILL.md"), false);
-  assert.equal(manifest.interface.composerIcon, "./assets/flame-composer-icon.svg");
-  assert.equal(existsSync("plugins/agent-workflow-roast/assets/flame-composer-icon.svg"), true);
+  assert.equal(manifest.interface.composerIcon, "./assets/toaster-composer-icon.svg");
+  assert.equal(existsSync("plugins/agent-workflow-roast/assets/toaster-composer-icon.svg"), true);
 });
 
 test("roast skill handles precomputed report coaching without reading raw sessions", () => {

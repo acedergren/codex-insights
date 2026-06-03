@@ -227,6 +227,19 @@ export function parseArgs(argv) {
       options.exportFormat = argv[++index];
     } else if (arg.startsWith("--export=")) {
       options.exportFormat = arg.split("=", 2)[1];
+    } else if (arg === "--site" || arg === "--sites") {
+      options.exportFormat = "site";
+      options.open = false;
+    } else if (arg === "--present") {
+      const mode = argv[++index];
+      if (mode !== "site" && mode !== "sites") throw new Error("--present must be sites");
+      options.exportFormat = "site";
+      options.open = false;
+    } else if (arg.startsWith("--present=")) {
+      const mode = arg.split("=", 2)[1];
+      if (mode !== "site" && mode !== "sites") throw new Error("--present must be sites");
+      options.exportFormat = "site";
+      options.open = false;
     } else if (arg === "--output") {
       options.output = argv[++index];
     } else if (arg.startsWith("--output=")) {
@@ -2740,6 +2753,8 @@ Options:
   --days <n>                 Lookback window in days (default: ${DEFAULT_DAYS})
   --no-memory                Exclude ~/.codex/memories/MEMORY.md
   --export markdown|html|json|site Export format, default html; site creates a Sites archive
+  --site                     Generate a Sites-ready archive instead of opening local HTML
+  --present sites            Alias for --site
   --output <path>            Output path for markdown/json; directory for HTML
   --output-dir <path>        Directory for the default HTML artifact
   --project <name|path>      Analyze only rows from a project name, path segment, or cwd path

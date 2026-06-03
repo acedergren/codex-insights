@@ -71,7 +71,7 @@ npm run roast -- --export markdown --output agent-workflow-roast.md
 Prepare a Sites-ready static archive:
 
 ```bash
-npm run roast -- --export site --output-dir .
+npm run roast:site -- --output-dir .
 ```
 
 That writes `agent-workflow-roast-site.tgz`, containing `index.html`, for the Sites `_create_project_version` archive parameter.
@@ -120,6 +120,8 @@ If no measured token data exists for a row, the report falls back to a redacted 
 --no-memory                 Exclude ~/.codex/memories/MEMORY.md
 --no-ai                     Skip codex exec synthesis and use deterministic coaching
 --export markdown|html|json|site Export format, default html; site creates a Sites archive
+--site                      Generate a Sites-ready archive instead of opening local HTML
+--present sites             Alias for --site
 --output <path>             Output path for markdown/json; directory for HTML
 --output-dir <path>         Directory for the default agent-workflow-roast.html artifact
 --project <name|path>       Analyze only rows from a project name, path segment, or cwd path
@@ -174,10 +176,10 @@ npm run roast -- --days 7 --no-ai --no-open --output-dir .
 Use Sites for presenting generated reports. Create a Sites-ready archive with:
 
 ```bash
-npm run roast -- --export site --output-dir .
+npm run roast:site -- --output-dir .
 ```
 
-Then create a Sites project version from `agent-workflow-roast-site.tgz` and deploy that version. The old coaching playground remains in the repo for prompt/design experiments, but it is superseded by the generated report plus Sites archive for presentation.
+Then create a Sites project version from `agent-workflow-roast-site.tgz` and deploy that version. For agent-driven presentation requests, use `--site` or `npm run roast:site`; do not route users through the old coaching playground. The playground remains in the repo for prompt/design experiments, but generated reports plus Sites archives are the presentation path.
 
 ## Requirements
 

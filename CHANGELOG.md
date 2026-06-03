@@ -9,6 +9,7 @@ All notable changes to Agent Workflow Roast are documented here.
 - Added `--project <name|path>` to scope reports to one Codex project by cwd-derived project name, path segment, or path.
 - Added a flame composer icon for the `@agent` plugin picker.
 - Added `--export site` to create a Sites-ready `agent-workflow-roast-site.tgz` archive with `index.html`.
+- Added `--site`, `--present sites`, and `npm run roast:site` as the preferred Sites-driven presentation path.
 
 ### Changed
 

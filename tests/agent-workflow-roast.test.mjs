@@ -831,6 +831,20 @@ test("parseArgs supports plan options", () => {
   assert.equal(options.useAi, false);
 });
 
+test("parseArgs supports Sites presentation aliases", () => {
+  const site = parseArgs(["--site"]);
+  const present = parseArgs(["--present", "sites"]);
+  const presentEquals = parseArgs(["--present=site"]);
+
+  assert.equal(site.exportFormat, "site");
+  assert.equal(site.open, false);
+  assert.equal(present.exportFormat, "site");
+  assert.equal(present.open, false);
+  assert.equal(presentEquals.exportFormat, "site");
+  assert.equal(presentEquals.open, false);
+  assert.throws(() => parseArgs(["--present", "playground"]), /--present must be sites/);
+});
+
 test("parseArgs defaults to a rolling 7-day window", () => {
   const options = parseArgs(["--no-open", "--no-ai"]);
 

@@ -28,7 +28,7 @@ This file applies to the entire `codex-insights` repository.
 - Prepare a Sites-ready presentation archive with:
 
   ```bash
-  npm run roast -- --export site --no-ai --output-dir .
+  npm run roast:site -- --no-ai --output-dir .
   ```
 
 - Use `--no-ai` or `AGENT_WORKFLOW_ROAST_NO_AI=1` when testing against real local Codex sessions unless the user explicitly approves sending the bounded, redacted synthesis payload through `codex exec`.
@@ -56,7 +56,7 @@ This file applies to the entire `codex-insights` repository.
 - Plugin runs generate `agent-workflow-roast.html` through `plugins/agent-workflow-roast/scripts/agent-workflow-roast.mjs`, `plugins/agent-workflow-roast/templates/report.html`, and `plugins/agent-workflow-roast/assets/report.css`.
 - Lasting generated-report UI changes belong in `templates/report.html`, `assets/report.css`, or renderer code in `agent-workflow-roast.mjs`, not in generated `agent-workflow-roast.html`.
 - The coaching playground at `plugins/agent-workflow-roast/playgrounds/roast-coach-playground.html` is legacy prompt/design scaffolding. It is superseded for presentation by the generated report and Sites-ready archive.
-- For presenting generated reports, prefer `npm run roast -- --export site --output-dir .` and upload `agent-workflow-roast-site.tgz` through Sites. Keep Sites presentation work grounded in generated report output, not playground output.
+- For presenting generated reports, prefer `npm run roast:site -- --output-dir .` and upload `agent-workflow-roast-site.tgz` through Sites. Keep Sites presentation work grounded in generated report output, not playground output.
 - When applying `$impeccable` or other design feedback to generated report assets, first make the source change in `assets/report.css`, `templates/report.html`, or renderer helpers, then add or update `renderHtml()` assertions proving the generated HTML contains the intended classes, tokens, or markup.
 - After source and tests are updated, run `npm run roast -- --no-ai --no-open --output-dir .` and inspect the generated `agent-workflow-roast.html` as evidence. For design anti-pattern checks, run the detector against the generated HTML, not just the source CSS or playground.
 - Do not stage or commit the generated `agent-workflow-roast.html`; keep commits to source, tests, and intentional docs.

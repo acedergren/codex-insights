@@ -424,7 +424,9 @@ test("renderers include required report sections", () => {
   assert.match(html, /--text-display: 1\.75rem/);
   assert.match(html, /--space-5: 24px/);
   assert.match(html, /padding: var\(--space-5\)/);
-  assert.match(html, /max-width: 1280px/);
+  assert.match(html, /--content-max: 1280px/);
+  assert.match(html, /--content-wide: 1360px/);
+  assert.match(html, /max-width: var\(--content-max\)/);
   assert.match(html, /gap: var\(--space-4\)/);
   assert.match(html, /font-size: var\(--text-display\)/);
   assert.match(html, /font-variant-numeric: tabular-nums/);

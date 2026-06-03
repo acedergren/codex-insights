@@ -25,6 +25,8 @@
   --space-4: 16px;
   --space-5: 24px;
   --space-6: 32px;
+  --content-max: 1280px;
+  --content-wide: 1360px;
 }
 
 * {
@@ -229,7 +231,7 @@ body {
 }
 
 .panel {
-  padding: var(--space-6) 0;
+  padding: 40px 0;
   background: transparent;
   border: 0;
   border-top: 1px solid var(--line);
@@ -241,9 +243,28 @@ body {
   display: flex;
   justify-content: space-between;
   gap: var(--space-3);
-  max-width: 1280px;
+  max-width: var(--content-max);
   margin: 0 auto;
   padding: 0 var(--space-6) var(--space-4);
+}
+
+.coaching-strip-panel {
+  padding-top: 34px;
+  padding-bottom: 36px;
+}
+
+.effectiveness-panel {
+  padding-top: 38px;
+  padding-bottom: 48px;
+}
+
+.coaching-panel,
+.artifact-queue-panel,
+.custom-instructions-panel,
+.prompt-quality-panel,
+.evidence-panel {
+  padding-top: 44px;
+  padding-bottom: 48px;
 }
 
 h1,
@@ -572,10 +593,10 @@ h2 {
 }
 
 .workflow-readout {
-  display: flex;
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 0;
-  max-width: 1280px;
+  max-width: var(--content-max);
   margin: 0 auto;
   padding: 0 var(--space-6);
   overflow: hidden;
@@ -621,7 +642,6 @@ h2 {
 }
 
 .workflow-readout article {
-  flex: 1 1 220px;
   min-width: 0;
   padding: 18px;
   background: transparent;
@@ -666,7 +686,7 @@ h2 {
 .action-queue {
   display: grid;
   gap: var(--space-3);
-  max-width: 1280px;
+  max-width: var(--content-max);
   margin: 0 auto;
   padding: 0 var(--space-6);
   list-style: none;
@@ -792,9 +812,9 @@ h2 {
 
 .effectiveness-grid {
   display: grid;
-  grid-template-columns: minmax(420px, 1.2fr) minmax(0, 0.8fr);
+  grid-template-columns: minmax(520px, 1.35fr) minmax(320px, 0.65fr);
   gap: var(--space-4);
-  max-width: 1280px;
+  max-width: var(--content-wide);
   margin: 0 auto;
   padding: 0 var(--space-6);
 }
@@ -966,7 +986,7 @@ h2 {
 
 .effectiveness-metrics {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
   gap: var(--space-3);
 }
 
@@ -997,6 +1017,7 @@ h2 {
   color: var(--blue);
   font-size: var(--text-title);
   font-weight: 820;
+  white-space: nowrap;
 }
 
 .bar {
@@ -1031,7 +1052,7 @@ h2 {
 }
 
 .custom-instructions-copy {
-  max-width: 1280px;
+  max-width: var(--content-max);
   margin: 0 auto;
   padding: 0 var(--space-6);
 }
@@ -1057,7 +1078,7 @@ h2 {
   display: grid;
   grid-template-columns: minmax(0, 1.2fr) minmax(280px, 0.8fr);
   gap: var(--space-4);
-  max-width: 1280px;
+  max-width: var(--content-max);
   margin: 0 auto;
   padding: 0 var(--space-6);
 }
@@ -1122,7 +1143,7 @@ h2 {
 }
 
 .prompt-quality-panel .prompt-quality {
-  max-width: 1280px;
+  max-width: var(--content-max);
   margin: 0 auto;
 }
 
@@ -1171,7 +1192,7 @@ h2 {
 
 .table-wrap {
   overflow-x: auto;
-  max-width: 1280px;
+  max-width: var(--content-wide);
   margin: 0 auto;
   padding: 0 var(--space-6);
 }
@@ -1236,7 +1257,7 @@ code {
 .mini-list {
   display: grid;
   gap: var(--space-3);
-  max-width: 1280px;
+  max-width: var(--content-max);
   margin: 0 auto;
   padding: 0 var(--space-6);
 }
@@ -1303,7 +1324,7 @@ code {
 .evidence-layout {
   display: grid;
   gap: var(--space-4);
-  max-width: 1280px;
+  max-width: var(--content-wide);
   margin: 0 auto;
   padding: 0 var(--space-6);
 }
@@ -1419,6 +1440,31 @@ code {
     grid-template-columns: 1fr;
   }
 
+  .workflow-readout {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .workflow-readout article + article {
+    border-left: 0;
+  }
+
+  .workflow-readout article:nth-child(2n) {
+    border-left: 1px solid var(--line);
+  }
+
+  .workflow-readout article:nth-child(n + 3) {
+    border-top: 1px solid var(--line);
+  }
+
+  .hero-summary {
+    border-color: var(--line);
+  }
+
+  .hero-summary article + article {
+    border-top: 1px solid var(--line);
+    border-left: 0;
+  }
+
   .map-panel {
     min-height: auto;
   }
@@ -1517,7 +1563,16 @@ code {
   }
 
   .workflow-readout {
+    grid-template-columns: 1fr;
     border-radius: 8px;
+  }
+
+  .workflow-readout article:nth-child(2n) {
+    border-left: 0;
+  }
+
+  .workflow-readout article:nth-child(n + 3) {
+    border-top: 0;
   }
 
   .workflow-readout article + article {

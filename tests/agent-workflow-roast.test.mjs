@@ -780,6 +780,21 @@ test("writeReport exports markdown to the requested path", () => {
   assert.equal(output, join(root, "report.md"));
 });
 
+test("writeReport exports a Sites-ready archive with index html", () => {
+  const root = mkdtempSync(join(tmpdir(), "agent-workflow-roast-site-export-"));
+  const inputs = { rows: [{ cwd: "/tmp/agent-workflow-roast", content: "ok" }], malformedRows: 0, memoryText: "", jsonlFiles: [] };
+  const report = buildReport(inputs, { days: 7, includeMemory: false, useAi: false });
+  const output = writeReport(report, {
+    exportFormat: "site",
+    outputDir: root,
+  });
+  const listing = spawnSync("tar", ["-tzf", output], { encoding: "utf8", shell: false });
+
+  assert.equal(output, join(root, "agent-workflow-roast-site.tgz"));
+  assert.equal(listing.status, 0, listing.stderr);
+  assert.match(listing.stdout, /(?:^|\n)\.\/index\.html(?:\n|$)/);
+});
+
 test("cleanupOldTempReports removes stale report directories", () => {
   const root = mkdtempSync(join(tmpdir(), "agent-workflow-roast-cleanup-"));
   const stale = join(root, "stale");
@@ -796,7 +811,7 @@ test("parseArgs supports plan options", () => {
     "30",
     "--no-memory",
     "--export",
-    "json",
+    "site",
     "--output-dir",
     "/tmp/reports",
     "--project",
@@ -807,7 +822,7 @@ test("parseArgs supports plan options", () => {
 
   assert.equal(options.days, 30);
   assert.equal(options.includeMemory, false);
-  assert.equal(options.exportFormat, "json");
+  assert.equal(options.exportFormat, "site");
   assert.equal(options.outputDir, "/tmp/reports");
   assert.equal(options.project, "agent-workflow-roast");
   assert.equal(options.open, false);

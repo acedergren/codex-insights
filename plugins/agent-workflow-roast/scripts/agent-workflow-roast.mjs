@@ -4,6 +4,7 @@ import {
   closeSync,
   existsSync,
   mkdirSync,
+  mkdtempSync,
   openSync,
   opendirSync,
   readFileSync,
@@ -14,7 +15,7 @@ import {
   statSync,
   writeFileSync,
 } from "node:fs";
-import { homedir } from "node:os";
+import { homedir, tmpdir } from "node:os";
 import { basename, dirname, extname, isAbsolute, join, relative, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -26,6 +27,7 @@ const MAX_JSONL_BYTES = 2 * 1024 * 1024;
 const MAX_SESSION_FILES = 200;
 const MAX_SESSION_DIR_ENTRIES = 512;
 const HTML_REPORT_FILENAME = "agent-workflow-roast.html";
+const SITES_ARCHIVE_FILENAME = "agent-workflow-roast-site.tgz";
 const ESTIMATED_CHARS_PER_TOKEN = 4;
 const DEFAULT_ENTERPRISE_INPUT_COST_PER_MILLION = 5;
 const DEFAULT_ENTERPRISE_CACHED_INPUT_COST_PER_MILLION = 0.5;
@@ -255,8 +257,8 @@ export function parseArgs(argv) {
   if (!Number.isFinite(options.days) || options.days < 1) {
     throw new Error("--days must be a positive number");
   }
-  if (options.exportFormat && !["markdown", "html", "json"].includes(options.exportFormat)) {
-    throw new Error("--export must be markdown, html, or json");
+  if (options.exportFormat && !["markdown", "html", "json", "site"].includes(options.exportFormat)) {
+    throw new Error("--export must be markdown, html, json, or site");
   }
   if (options.project != null) {
     options.project = String(options.project).trim();
@@ -1543,6 +1545,11 @@ export function writeReport(report, options) {
     writeFileSync(output, renderHtml(report));
     return output;
   }
+  if (exportFormat === "site") {
+    const output = ensureSafeReportOutputPath(resolveSiteArchiveOutputPath(options), options);
+    writeSitesArchive(report, output);
+    return output;
+  }
   if (exportFormat) {
     const extension = exportFormat === "markdown" ? "md" : exportFormat;
     const output = ensureSafeReportOutputPath(resolve(options.output || `agent-workflow-roast.${extension}`), options);
@@ -1555,9 +1562,30 @@ export function writeReport(report, options) {
   }
 }
 
+function writeSitesArchive(report, output) {
+  const stagingRoot = mkdtempSync(join(tmpdir(), "agent-workflow-roast-site-"));
+  try {
+    writeFileSync(join(stagingRoot, "index.html"), renderHtml(report));
+    const result = spawnSync("tar", ["-czf", output, "-C", stagingRoot, "."], {
+      encoding: "utf8",
+      shell: false,
+    });
+    if (result.status !== 0) {
+      throw new Error(`Failed to create Sites archive: ${result.stderr || result.stdout || "tar failed"}`);
+    }
+  } finally {
+    rmSync(stagingRoot, { recursive: true, force: true });
+  }
+}
+
 function resolveHtmlOutputPath(options = {}) {
   const outputRoot = options.output ? htmlOutputRootFromOption(options.output) : options.outputDir;
   return join(resolve(outputRoot || process.cwd()), HTML_REPORT_FILENAME);
+}
+
+function resolveSiteArchiveOutputPath(options = {}) {
+  if (options.output) return resolve(options.output);
+  return join(resolve(options.outputDir || process.cwd()), SITES_ARCHIVE_FILENAME);
 }
 
 function htmlOutputRootFromOption(output) {
@@ -2717,7 +2745,7 @@ function printHelp() {
 Options:
   --days <n>                 Lookback window in days (default: ${DEFAULT_DAYS})
   --no-memory                Exclude ~/.codex/memories/MEMORY.md
-  --export markdown|html|json Export format, default html
+  --export markdown|html|json|site Export format, default html; site creates a Sites archive
   --output <path>            Output path for markdown/json; directory for HTML
   --output-dir <path>        Directory for the default HTML artifact
   --project <name|path>      Analyze only rows from a project name, path segment, or cwd path

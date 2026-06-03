@@ -24,13 +24,15 @@ If the user provides existing Agent Workflow Roast JSON, markdown, HTML, aggrega
    AGENT_WORKFLOW_ROAST_OUTPUT_DIR="$TRIGGER_DIR" node scripts/agent-workflow-roast.mjs --project oci-self-service-portal
    AGENT_WORKFLOW_ROAST_OUTPUT_DIR="$TRIGGER_DIR" node scripts/agent-workflow-roast.mjs --no-ai
    AGENT_WORKFLOW_ROAST_OUTPUT_DIR="$TRIGGER_DIR" node scripts/agent-workflow-roast.mjs --export markdown
+   AGENT_WORKFLOW_ROAST_OUTPUT_DIR="$TRIGGER_DIR" node scripts/agent-workflow-roast.mjs --export site
    ```
 
-3. Share the generated report path. The HTML report is always named `agent-workflow-roast.html` and written to the folder where the skill was triggered, unless the user explicitly supplies an output directory.
+3. Share the generated report path. The HTML report is always named `agent-workflow-roast.html` and written to the folder where the skill was triggered, unless the user explicitly supplies an output directory. If the user asks for Sites presentation, prefer `--export site` and upload the resulting `agent-workflow-roast-site.tgz` archive to Sites.
 
 ## Notes
 
 - The analyzer redacts obvious secrets before synthesis or rendering.
 - Treat precomputed metrics and redacted report content as enough for follow-up coaching; ask for a fresh run only when the user wants updated data.
+- Treat the playground as legacy prompt/design scaffolding. For presenting generated reports, prefer a Sites-ready archive or Sites deployment.
 - Missing history, session, or memory files should degrade into a sparse report instead of failing.
 - If qualitative synthesis is unavailable, use the deterministic report sections.

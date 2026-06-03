@@ -7,7 +7,12 @@ All notable changes to Agent Workflow Roast are documented here.
 ### Added
 
 - Added `--project <name|path>` to scope reports to one Codex project by cwd-derived project name, path segment, or path.
-- Added a toaster composer icon for the `@agent` plugin picker.
+- Added a flame composer icon for the `@agent` plugin picker.
+- Added `--export site` to create a Sites-ready `agent-workflow-roast-site.tgz` archive with `index.html`.
+
+### Changed
+
+- Superseded the playground as the presentation path; generated reports should be presented through Sites-ready archives.
 
 ## [0.2.2] - 2026-05-30
 

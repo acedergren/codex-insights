@@ -68,6 +68,14 @@ Export a durable Markdown report:
 npm run roast -- --export markdown --output agent-workflow-roast.md
 ```
 
+Prepare a Sites-ready static archive:
+
+```bash
+npm run roast -- --export site --output-dir .
+```
+
+That writes `agent-workflow-roast-site.tgz`, containing `index.html`, for the Sites `_create_project_version` archive parameter.
+
 Analyze one project only:
 
 ```bash
@@ -111,7 +119,7 @@ If no measured token data exists for a row, the report falls back to a redacted 
 --days <n>                  Lookback window in days, default 7
 --no-memory                 Exclude ~/.codex/memories/MEMORY.md
 --no-ai                     Skip codex exec synthesis and use deterministic coaching
---export markdown|html|json Export format, default html
+--export markdown|html|json|site Export format, default html; site creates a Sites archive
 --output <path>             Output path for markdown/json; directory for HTML
 --output-dir <path>         Directory for the default agent-workflow-roast.html artifact
 --project <name|path>       Analyze only rows from a project name, path segment, or cwd path
@@ -137,6 +145,7 @@ plugins/agent-workflow-roast/scripts/agent-workflow-roast.mjs
 plugins/agent-workflow-roast/templates/report.html      HTML report template
 plugins/agent-workflow-roast/assets/report.css          Report styling
 plugins/agent-workflow-roast/playgrounds/roast-coach-playground.html
+                                                          Legacy prompt/design playground
 tests/agent-workflow-roast.test.mjs
 ```
 
@@ -160,15 +169,15 @@ Run a safe real-data smoke test without AI synthesis:
 npm run roast -- --days 7 --no-ai --no-open --output-dir .
 ```
 
-## Playground
+## Presentation
 
-Open the coaching playground to tune the report shape and prompt strategy:
+Use Sites for presenting generated reports. Create a Sites-ready archive with:
 
 ```bash
-open plugins/agent-workflow-roast/playgrounds/roast-coach-playground.html
+npm run roast -- --export site --output-dir .
 ```
 
-It is a self-contained HTML file with controls for tone, outcome, evidence strictness, example friction, live preview, and a copyable analyzer prompt.
+Then create a Sites project version from `agent-workflow-roast-site.tgz` and deploy that version. The old coaching playground remains in the repo for prompt/design experiments, but it is superseded by the generated report plus Sites archive for presentation.
 
 ## Requirements
 

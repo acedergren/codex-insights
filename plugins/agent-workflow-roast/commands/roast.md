@@ -1,6 +1,6 @@
 ---
 description: Generate an Agent Workflow Roast report in the current workspace
-argument-hint: [--days 7] [--project name-or-path] [--no-memory] [--no-ai] [--output-dir .] [--export markdown|html|json]
+argument-hint: [--days 7] [--project name-or-path] [--no-memory] [--no-ai] [--output-dir .] [--export markdown|html|json|site]
 allowed-tools: [Bash, Read]
 ---
 
@@ -19,5 +19,7 @@ AGENT_WORKFLOW_ROAST_ARGV_JSON
 ```
 
 Replace `[]` with the parsed argv array when options are supplied, for example `["--days","7","--project","oci-self-service-portal","--no-ai","--no-open"]`.
+
+When the user asks to present the result with Sites, pass `["--export","site"]` or add it to their other options. The command prints a `agent-workflow-roast-site.tgz` archive containing `index.html`, ready for the Sites `_create_project_version` archive parameter.
 
 Report the generated file path back to the user. The HTML artifact must be named `agent-workflow-roast.html` and land in the folder where the command was invoked, unless the user explicitly passes an output directory.

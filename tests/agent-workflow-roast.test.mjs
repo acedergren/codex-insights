@@ -376,18 +376,20 @@ test("renderers include required report sections", () => {
   const html = renderHtml(report);
   const markdown = renderMarkdown(report);
 
-  assert.match(html, /Coaching targets/);
+  assert.match(html, /Effectiveness Targets/);
   assert.doesNotMatch(html, /Top Improvements/);
-  assert.match(html, /Start Here/);
-  assert.match(html, /Open top actions/);
-  assert.match(html, /class="start-here-grid"/);
-  assert.match(html, /Workflow Read/);
+  assert.doesNotMatch(html, /Start Here/);
+  assert.doesNotMatch(html, /class="start-here-grid"/);
+  assert.doesNotMatch(html, /class="quick-nav"/);
+  assert.match(html, /class="hero-summary"/);
+  assert.match(html, /Copy action prompt/);
+  assert.match(html, /Workflow Diagnosis/);
   assert.match(html, /class="workflow-readout"/);
   assert.doesNotMatch(html, /Good \/ Bad \/ Ugly/);
   assert.doesNotMatch(html, />Bad</);
   assert.doesNotMatch(html, />Ugly</);
   assert.match(html, /Do first/);
-  assert.match(html, /Coaching Targets/);
+  assert.match(html, /Effectiveness Targets/);
   assert.match(html, /token spend scenario/);
   assert.match(html, /API cost delta/);
   assert.match(html, /Dates:/);
@@ -422,7 +424,7 @@ test("renderers include required report sections", () => {
   assert.match(html, /--text-display: 1\.75rem/);
   assert.match(html, /--space-5: 24px/);
   assert.match(html, /padding: var\(--space-5\)/);
-  assert.match(html, /margin: var\(--space-5\) var\(--space-6\) 0/);
+  assert.match(html, /max-width: 1280px/);
   assert.match(html, /gap: var\(--space-4\)/);
   assert.match(html, /font-size: var\(--text-display\)/);
   assert.match(html, /font-variant-numeric: tabular-nums/);
@@ -499,7 +501,7 @@ test("workflow read cards do not repeat Coach's Read text verbatim", () => {
     voiceReview: applyVoiceContract(insights).review,
     insights,
   });
-  const workflowRead = sectionText(html, "workflow-read");
+  const workflowRead = sectionText(html, "workflow-diagnosis");
   const coachRead = sectionText(html, "coach-s-read");
 
   assert.equal(coachRead.includes(insights.roast), true);

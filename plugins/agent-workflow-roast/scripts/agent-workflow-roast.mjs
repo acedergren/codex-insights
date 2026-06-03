@@ -1372,22 +1372,15 @@ function reportSubtitle(report) {
 export function renderHtml(report) {
   const template = readFileSync(join(ROOT_DIR, "templates", "report.html"), "utf8");
   const css = readFileSync(join(ROOT_DIR, "assets", "report.css"), "utf8");
-  const startHere = panel(
-    "Start Here",
-    '<p class="subtle">The shortest path through the report: action, signal, proof</p>',
-    renderStartHere(report),
-    "panel start-here-panel",
-  );
-
   const coachingHeader = panel(
-    "Workflow Read",
-    '<p class="subtle">The blunt coaching read before the details</p>',
+    "Workflow Diagnosis",
+    '<p class="subtle">The blunt coaching read, stripped down to what changes behavior.</p>',
     renderGoodBadUgly(report),
     "panel coaching-strip-panel",
   );
 
   const effectiveness = panel(
-    "Coaching Targets",
+    "Effectiveness Targets",
     '<p class="subtle">Token spend, estimated enterprise API cost, and coaching metrics mapped to better behavior</p>',
     renderEffectivenessDashboard(
       report.insights.effectivenessMetrics || buildEffectivenessMetrics(report.stats, report.insights),
@@ -1427,8 +1420,9 @@ export function renderHtml(report) {
   return template
     .replaceAll("{{title}}", escapeHtml(report.title))
     .replace("{{subtitle}}", escapeHtml(reportSubtitle(report)))
+    .replace("{{heroSummary}}", renderHeroSummary(report))
     .replace("{{css}}", css)
-    .replace("{{coachingHeader}}", startHere + coachingHeader)
+    .replace("{{coachingHeader}}", coachingHeader)
     .replace("{{effectiveness}}", effectiveness)
     .replace("{{coaching}}", coaching)
     .replace("{{artifactQueue}}", artifactQueue)
@@ -2345,32 +2339,32 @@ function renderGoodBadUgly(report) {
   </div>`;
 }
 
-function renderStartHere(report) {
+function renderHeroSummary(report) {
   const stats = report.stats || {};
   const insights = report.insights || {};
   const signals = report.signals || buildSignals(stats);
   const actions = report.recommendations || insights.recommendations || buildArtifactQueue(stats, insights);
   const firstAction = actions[0] || {};
   const topSignal = signals[0] || {};
-  return `<div class="start-here-grid">
-    <article class="start-here-action">
-      <span class="start-label">Do first</span>
-      <h3 dir="auto">${escapeHtml(firstAction.title || "Create the first durable workflow artifact")}</h3>
-      <p dir="auto">${escapeHtml(firstAction.rationale || "Start with the smallest reusable artifact that removes the top recurring workflow drag.")}</p>
-      <a class="inline-action" href="#top-actions">Open top actions</a>
+  return `<aside class="hero-summary" aria-label="Report summary">
+    <article class="hero-primary">
+      <span>Do first</span>
+      <strong dir="auto">${escapeHtml(firstAction.title || "Tighten the next prompt")}</strong>
+      <p dir="auto">${escapeHtml(firstAction.rationale || "Start with the smallest reusable habit that removes the top recurring drag.")}</p>
+      <a href="#top-actions">Copy action prompt</a>
     </article>
     <article>
-      <span class="start-label">Top signal</span>
+      <span>Top signal</span>
       <strong dir="auto">${escapeHtml(topSignal.label || "No dominant signal yet")}</strong>
       <p dir="auto">${escapeHtml(topSignal.coaching || topSignal.description || "Use the evidence section to decide what changed and what should be checked next.")}</p>
     </article>
     <article>
-      <span class="start-label">Proof source</span>
+      <span>Proof source</span>
       <strong dir="auto">${escapeHtml((topSignal.sourceKinds || []).join(", ") || "Evidence section")}</strong>
       <p>Validate the recommendation against the source-backed receipts before changing durable workflow rules.</p>
-      <a class="inline-action" href="#evidence">Open evidence</a>
+      <a href="#evidence">Read evidence</a>
     </article>
-  </div>`;
+  </aside>`;
 }
 
 function gbuGood(stats = {}) {

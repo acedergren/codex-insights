@@ -1572,7 +1572,13 @@ export function writeReport(report, options) {
 function writeSitesArchive(report, output) {
   const stagingRoot = mkdtempSync(join(tmpdir(), "agent-workflow-roast-site-"));
   try {
-    writeFileSync(join(stagingRoot, "index.html"), renderHtml(report));
+    const distRoot = join(stagingRoot, "dist");
+    const serverRoot = join(distRoot, "server");
+    const metaRoot = join(distRoot, "_appgen_meta");
+    mkdirSync(serverRoot, { recursive: true });
+    mkdirSync(metaRoot, { recursive: true });
+    writeFileSync(join(serverRoot, "index.js"), renderSitesWorker(report));
+    writeFileSync(join(metaRoot, "appgarden.json"), `${sitesHostingMetadata()}\n`);
     const result = spawnSync("tar", ["-czf", output, "-C", stagingRoot, "."], {
       encoding: "utf8",
       shell: false,
@@ -1583,6 +1589,28 @@ function writeSitesArchive(report, output) {
   } finally {
     rmSync(stagingRoot, { recursive: true, force: true });
   }
+}
+
+function renderSitesWorker(report) {
+  const html = renderHtml(report);
+  return `const REPORT_HTML = ${JSON.stringify(html)};
+
+export default {
+  async fetch() {
+    return new Response(REPORT_HTML, {
+      headers: {
+        "Content-Type": "text/html; charset=utf-8",
+      },
+    });
+  },
+};
+`;
+}
+
+function sitesHostingMetadata() {
+  const hostingPath = join(ROOT_DIR, ".openai", "hosting.json");
+  if (!existsSync(hostingPath)) return JSON.stringify({ d1: null, r2: null }, null, 2);
+  return readFileSync(hostingPath, "utf8").trim();
 }
 
 function resolveHtmlOutputPath(options = {}) {

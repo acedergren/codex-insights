@@ -6,6 +6,7 @@ This file applies to the entire `codex-insights` repository.
 
 - This repository ships the `Agent Workflow Roast` local plugin.
 - Marketplace metadata lives in `.agents/plugins/marketplace.json`.
+- Sites logical hosting metadata lives in `.openai/hosting.json`.
 - The installable plugin package lives in `plugins/agent-workflow-roast/`.
 - Plugin metadata lives in `plugins/agent-workflow-roast/.codex-plugin/plugin.json`.
 - `/roast` command behavior lives in `plugins/agent-workflow-roast/commands/roast.md`.

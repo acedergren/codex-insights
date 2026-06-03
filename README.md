@@ -74,7 +74,7 @@ Prepare a Sites-ready static archive:
 npm run roast:site -- --output-dir .
 ```
 
-That writes `agent-workflow-roast-site.tgz`, containing `index.html`, for the Sites `_create_project_version` archive parameter.
+That writes `agent-workflow-roast-site.tgz`, containing a deployable `dist/server/index.js` Worker and Sites metadata for the Sites `_create_project_version` archive parameter.
 
 Analyze one project only:
 
@@ -139,6 +139,7 @@ By default, the analyzer attempts qualitative synthesis with `codex exec` using 
 
 ```text
 .agents/plugins/marketplace.json                         Repo marketplace catalog
+.openai/hosting.json                                     Sites logical hosting metadata
 plugins/agent-workflow-roast/.codex-plugin/plugin.json  Plugin manifest
 plugins/agent-workflow-roast/commands/roast.md        /roast command
 plugins/agent-workflow-roast/skills/roast/SKILL.md    @roast skill

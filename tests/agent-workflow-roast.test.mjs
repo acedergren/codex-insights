@@ -782,8 +782,9 @@ test("writeReport exports markdown to the requested path", () => {
   assert.equal(output, join(root, "report.md"));
 });
 
-test("writeReport exports a Sites-ready archive with index html", () => {
+test("writeReport exports a Sites-ready Worker archive", () => {
   const root = mkdtempSync(join(tmpdir(), "agent-workflow-roast-site-export-"));
+  const extractRoot = mkdtempSync(join(tmpdir(), "agent-workflow-roast-site-extract-"));
   const inputs = { rows: [{ cwd: "/tmp/agent-workflow-roast", content: "ok" }], malformedRows: 0, memoryText: "", jsonlFiles: [] };
   const report = buildReport(inputs, { days: 7, includeMemory: false, useAi: false });
   const output = writeReport(report, {
@@ -791,10 +792,18 @@ test("writeReport exports a Sites-ready archive with index html", () => {
     outputDir: root,
   });
   const listing = spawnSync("tar", ["-tzf", output], { encoding: "utf8", shell: false });
+  const extract = spawnSync("tar", ["-xzf", output, "-C", extractRoot], { encoding: "utf8", shell: false });
+  const worker = readFileSync(join(extractRoot, "dist", "server", "index.js"), "utf8");
+  const metadata = JSON.parse(readFileSync(join(extractRoot, "dist", "_appgen_meta", "appgarden.json"), "utf8"));
 
   assert.equal(output, join(root, "agent-workflow-roast-site.tgz"));
   assert.equal(listing.status, 0, listing.stderr);
-  assert.match(listing.stdout, /(?:^|\n)\.\/index\.html(?:\n|$)/);
+  assert.equal(extract.status, 0, extract.stderr);
+  assert.match(listing.stdout, /(?:^|\n)\.\/dist\/server\/index\.js(?:\n|$)/);
+  assert.match(listing.stdout, /(?:^|\n)\.\/dist\/_appgen_meta\/appgarden\.json(?:\n|$)/);
+  assert.match(worker, /export default/);
+  assert.match(worker, /new Response\(REPORT_HTML/);
+  assert.deepEqual(metadata, { d1: null, r2: null });
 });
 
 test("cleanupOldTempReports removes stale report directories", () => {

@@ -20,6 +20,6 @@ AGENT_WORKFLOW_ROAST_ARGV_JSON
 
 Replace `[]` with the parsed argv array when options are supplied, for example `["--days","7","--project","oci-self-service-portal","--no-ai","--no-open"]`.
 
-When the user asks to present the result with Sites, pass `["--site"]` or add `--site` to their other options. The command prints a `agent-workflow-roast-site.tgz` archive containing `index.html`, ready for the Sites `_create_project_version` archive parameter. Do not use the legacy playground for presentation.
+When the user asks to present the result with Sites, pass `["--site"]` or add `--site` to their other options. The command prints a `agent-workflow-roast-site.tgz` archive containing a deployable `dist/server/index.js` Worker and Sites metadata, ready for the Sites `_create_project_version` archive parameter. Do not use the legacy playground for presentation.
 
 Report the generated file path back to the user. Local HTML artifacts must be named `agent-workflow-roast.html` and land in the folder where the command was invoked, unless the user explicitly passes an output directory. Sites presentation artifacts must be named `agent-workflow-roast-site.tgz`.

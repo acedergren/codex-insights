@@ -4,8 +4,12 @@ All notable changes to Agent Workflow Roast are documented here.
 
 ## Unreleased
 
+## [0.2.3] - 2026-06-10
+
 ### Added
 
+- Added user-prompt-only prompt quality signals for visible goal, scope, acceptance, verification, and boundary markers.
+- Added measured-token-aware token effectiveness scoring so reports distinguish token-count coverage from fallback estimates.
 - Added `--project <name|path>` to scope reports to one Codex project by cwd-derived project name, path segment, or path.
 - Added a flame composer icon for the `@agent` plugin picker.
 - Added `--export site` to create a Sites-ready `agent-workflow-roast-site.tgz` archive.
@@ -13,6 +17,7 @@ All notable changes to Agent Workflow Roast are documented here.
 
 ### Changed
 
+- Fed aggregate prompt quality and token spend signals into the optional synthesis pass without exposing raw session prompts.
 - Changed Sites export to emit a Cloudflare Worker-compatible `dist/server/index.js` artifact plus Sites metadata.
 - Superseded the playground as the presentation path; generated reports should be presented through Sites-ready archives.
 

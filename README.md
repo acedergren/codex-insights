@@ -25,11 +25,11 @@ Reports are local-first. By default, each report uses a rolling 7-day window. Th
 Install the plugin from the public repo marketplace:
 
 ```bash
-codex plugin marketplace add acedergren/agent-workflow-roast --ref v0.2.2
+codex plugin marketplace add acedergren/agent-workflow-roast --ref v0.2.3
 codex plugin add agent-workflow-roast@agent-workflow-roast
 ```
 
-If you added the marketplace before `v0.2.2`, refresh it first:
+If you added the marketplace before `v0.2.3`, refresh it first:
 
 ```bash
 codex plugin marketplace upgrade agent-workflow-roast
@@ -98,7 +98,7 @@ Copy buttons are included for copy-ready sections in the HTML report.
 
 ## Current Release
 
-`v0.2.2` keeps the plugin surface focused on `/roast`, removes the extra Coach's Read skill, and adds the README icon. See [CHANGELOG.md](CHANGELOG.md) and [RELEASE_NOTES.md](RELEASE_NOTES.md) for details.
+`v0.2.3` adds user-prompt quality signals and measured-token-aware token effectiveness while keeping raw session prompts out of synthesis payloads. See [CHANGELOG.md](CHANGELOG.md) and [RELEASE_NOTES.md](RELEASE_NOTES.md) for details.
 
 ## Token Accounting
 

@@ -86,6 +86,16 @@ const NOISY_EXAMPLE_PATTERNS = [
   /strict JSON/i,
 ];
 
+const PROMPT_QUALITY_PATTERNS = {
+  goal: /\b(goal|objective|outcome|what i want|success looks like)\b/i,
+  constraint: /\b(scope|constraint|only|smallest|do not|don't|avoid|preserve|leave .* untouched)\b/i,
+  acceptance: /\b(acceptance|done when|success criteria|passes|should|must)\b/i,
+  verification: /\b(test|verify|verification|proof|screenshot|log|diff --check|validate|smoke)\b/i,
+  notTouch: /\b(what not to touch|do not touch|don't touch|leave .* untouched|avoid changing|unrelated)\b/i,
+  planning: /\b(plan|approach|steps|sequence|first|then)\b/i,
+  ambiguity: /\b(maybe|probably|whatever|somehow|just|thing|stuff|etc\.?)\b/i,
+};
+
 const REPORT_VOICE_CONTRACT = {
   voice: "Plainspoken engineering coach: specific, warm, lightly sharp, and allergic to filler.",
   preserve: ["commands", "file paths", "JSON keys", "artifact names", "safety rules"],
@@ -417,6 +427,45 @@ export function extractText(row) {
   return redactSecrets(parts.join("\n"));
 }
 
+function extractPromptText(row) {
+  if (!isUserPromptRow(row)) return "";
+  const parts = [];
+  const visit = (value, depth = 0) => {
+    if (depth > 5 || value == null) return;
+    if (typeof value === "string") {
+      if (value.length > 2) parts.push(value);
+      return;
+    }
+    if (Array.isArray(value)) {
+      for (const item of value.slice(0, 20)) visit(item, depth + 1);
+      return;
+    }
+    if (typeof value === "object") {
+      for (const key of ["content", "text", "message", "input_text", "payload", "item", "items"]) {
+        if (key in value) visit(value[key], depth + 1);
+      }
+    }
+  };
+  visit(row);
+  return redactSecrets(parts.join("\n"));
+}
+
+function isUserPromptRow(row) {
+  const candidates = [
+    row?.role,
+    row?.payload?.role,
+    row?.item?.role,
+    row?.payload?.item?.role,
+    row?.message?.role,
+    row?.payload?.message?.role,
+    row?.type,
+    row?.payload?.type,
+    row?.item?.type,
+    row?.payload?.item?.type,
+  ];
+  return candidates.some((candidate) => /(^|[_-])user($|[_-])|^user$/.test(String(candidate || "").toLowerCase()));
+}
+
 export function extractCwd(row) {
   const candidates = [
     row.cwd,
@@ -645,6 +694,15 @@ export function analyzeRows(rows, options = {}) {
     cachedInputTokens: 0,
     outputTokens: 0,
     reasoningOutputTokens: 0,
+    promptRows: 0,
+    promptChars: 0,
+    promptGoalMentions: 0,
+    promptConstraintMentions: 0,
+    promptAcceptanceMentions: 0,
+    promptVerificationMentions: 0,
+    promptNotTouchMentions: 0,
+    promptPlanningMentions: 0,
+    promptAmbiguityMentions: 0,
   };
 
   for (const row of rows) {
@@ -653,6 +711,8 @@ export function analyzeRows(rows, options = {}) {
     stats.totalRows += 1;
     const text = extractText(row);
     stats.textChars += text.length;
+    const promptText = extractPromptText(row);
+    if (promptText) recordPromptQuality(stats, promptText);
     const tokenUsage = extractTokenUsage(row, text);
     stats.measuredTokens += tokenUsage.measured ? tokenUsage.total : 0;
     stats.estimatedTokens += tokenUsage.measured ? 0 : tokenUsage.total;
@@ -701,6 +761,19 @@ export function analyzeRows(rows, options = {}) {
   return serializeStats(stats);
 }
 
+function recordPromptQuality(stats, text) {
+  const lower = text.toLowerCase();
+  stats.promptRows += 1;
+  stats.promptChars += text.length;
+  if (PROMPT_QUALITY_PATTERNS.goal.test(lower)) stats.promptGoalMentions += 1;
+  if (PROMPT_QUALITY_PATTERNS.constraint.test(lower)) stats.promptConstraintMentions += 1;
+  if (PROMPT_QUALITY_PATTERNS.acceptance.test(lower)) stats.promptAcceptanceMentions += 1;
+  if (PROMPT_QUALITY_PATTERNS.verification.test(lower)) stats.promptVerificationMentions += 1;
+  if (PROMPT_QUALITY_PATTERNS.notTouch.test(lower)) stats.promptNotTouchMentions += 1;
+  if (PROMPT_QUALITY_PATTERNS.planning.test(lower)) stats.promptPlanningMentions += 1;
+  if (PROMPT_QUALITY_PATTERNS.ambiguity.test(lower)) stats.promptAmbiguityMentions += 1;
+}
+
 function isUsefulExample(text) {
   if (!text || text.length < 20) return false;
   if (NOISY_EXAMPLE_PATTERNS.some((pattern) => pattern.test(text))) return false;
@@ -735,6 +808,7 @@ function serializeStats(stats) {
     sessions: stats.sessions,
     textChars: stats.textChars,
     tokenSpend: buildTokenSpend(stats),
+    promptQuality: buildPromptQualitySignals(stats),
     verificationMentions: stats.verificationMentions,
     planningMentions: stats.planningMentions,
     goalMentions: stats.goalMentions,
@@ -742,6 +816,49 @@ function serializeStats(stats) {
     tools: top(stats.tools, 10),
     friction: top(stats.friction, 10),
     examples: stats.examples,
+  };
+}
+
+function buildPromptQualitySignals(stats) {
+  const promptRows = stats.promptRows || 0;
+  const rows = Math.max(1, promptRows);
+  const averageChars = promptRows ? Math.round((stats.promptChars || 0) / promptRows) : 0;
+  const goalRate = (stats.promptGoalMentions || 0) / rows;
+  const constraintRate = (stats.promptConstraintMentions || 0) / rows;
+  const acceptanceRate = (stats.promptAcceptanceMentions || 0) / rows;
+  const verificationRate = (stats.promptVerificationMentions || 0) / rows;
+  const notTouchRate = (stats.promptNotTouchMentions || 0) / rows;
+  const planningRate = (stats.promptPlanningMentions || 0) / rows;
+  const ambiguityRate = (stats.promptAmbiguityMentions || 0) / rows;
+  const lengthPenalty = Math.min(10, Math.max(0, (averageChars - 900) / 140));
+  const score = promptRows
+    ? clampScore(
+        42 +
+          goalRate * 14 +
+          constraintRate * 12 +
+          acceptanceRate * 14 +
+          verificationRate * 12 +
+          notTouchRate * 8 +
+          planningRate * 5 -
+          ambiguityRate * 8 -
+          lengthPenalty,
+      )
+    : 70;
+  return {
+    score,
+    promptRows,
+    promptChars: stats.promptChars || 0,
+    averageChars,
+    goalMentions: stats.promptGoalMentions || 0,
+    constraintMentions: stats.promptConstraintMentions || 0,
+    acceptanceMentions: stats.promptAcceptanceMentions || 0,
+    verificationMentions: stats.promptVerificationMentions || 0,
+    notTouchMentions: stats.promptNotTouchMentions || 0,
+    planningMentions: stats.promptPlanningMentions || 0,
+    ambiguityMentions: stats.promptAmbiguityMentions || 0,
+    caveat: promptRows
+      ? "Derived from user-message rows only; it scores visible clarity markers, not the actual difficulty of the work."
+      : "No explicit user-message rows found, so prompt quality falls back to coaching defaults.",
   };
 }
 
@@ -1119,6 +1236,7 @@ export function buildDeterministicInsights(stats, memoryHits = []) {
   const mainProject = stats.projects[0]?.name || "recent agent work";
   const topTool = stats.tools[0]?.name || "local shell and file tools";
   const topFriction = stats.friction[0]?.name || "context drift";
+  const promptQuality = buildPromptQualityInsight(stats, mainProject);
   const insights = {
     summary: `Recent activity is concentrated around ${mainProject}, with ${topTool} as the strongest tool signal and ${topFriction} as the leading friction marker.`,
     atAGlance: {
@@ -1136,13 +1254,9 @@ export function buildDeterministicInsights(stats, memoryHits = []) {
       coaching: recommendationForSignal(item.name),
       rule: instructionForSignal(item.name, mainProject),
     })),
-    promptQuality: {
-      score: 72,
-      diagnosis: "Prompts appear action-oriented, but many would benefit from explicit acceptance proof and boundaries.",
-      betterPrompt: `For ${mainProject}, first restate the desired outcome, constraints, and verification command. Then implement the smallest change and report the proof.`,
-    },
+    promptQuality,
     effectivenessMetrics: buildEffectivenessMetrics(stats, {
-      promptQuality: { score: 72 },
+      promptQuality,
     }),
     improvements: [
       {
@@ -1178,6 +1292,40 @@ export function buildDeterministicInsights(stats, memoryHits = []) {
   return insights;
 }
 
+function buildPromptQualityInsight(stats = {}, mainProject = "recent agent work") {
+  const signals = stats.promptQuality || {};
+  const promptRows = signals.promptRows || 0;
+  if (!promptRows) {
+    return {
+      score: 70,
+      diagnosis: "No explicit user prompt rows were found, so this is a default coaching read rather than a measured prompt-quality signal.",
+      betterPrompt: `For ${mainProject}, state the outcome, scope, acceptance proof, and what not to touch before implementation starts.`,
+    };
+  }
+  const missing = [];
+  if (!signals.goalMentions) missing.push("goal");
+  if (!signals.constraintMentions) missing.push("scope or constraints");
+  if (!signals.acceptanceMentions) missing.push("acceptance criteria");
+  if (!signals.verificationMentions) missing.push("verification proof");
+  if (!signals.notTouchMentions) missing.push("what not to touch");
+  const diagnosis =
+    missing.length > 0
+      ? `${promptRows} user prompt row${promptRows === 1 ? "" : "s"} found. Stronger prompts would add ${humanList(missing)}.`
+      : `${promptRows} user prompt row${promptRows === 1 ? "" : "s"} found with clear goal, scope, acceptance proof, verification, and boundaries.`;
+  return {
+    score: signals.score || 70,
+    diagnosis: `${diagnosis} ${signals.caveat || "Derived from visible prompt markers."}`,
+    betterPrompt: `For ${mainProject}, state: goal, scope, constraints, acceptance checks, what not to touch, and exact verification proof. Then ask Codex to implement the smallest scoped change.`,
+  };
+}
+
+function humanList(items = []) {
+  const values = items.filter(Boolean).map(String);
+  if (values.length <= 1) return values[0] || "";
+  if (values.length === 2) return `${values[0]} and ${values[1]}`;
+  return `${values.slice(0, -1).join(", ")}, and ${values.at(-1)}`;
+}
+
 export function tryCodexSynthesis(stats, memoryHits, signals = buildSignals(stats)) {
   const prompt = buildCoachingPrompt(stats, memoryHits, signals);
   const result = spawnSync("codex", ["exec", "--skip-git-repo-check", "--json", prompt], {
@@ -1209,6 +1357,16 @@ export function buildCoachingPrompt(stats, memoryHits, signals = buildSignals(st
       projects: stats.projects.slice(0, 8),
       tools: stats.tools.slice(0, 8),
       examples: stats.examples.slice(0, 12),
+      promptQuality: stats.promptQuality,
+      tokenSpend: stats.tokenSpend
+        ? {
+            measured: stats.tokenSpend.measured,
+            estimated: stats.tokenSpend.estimated,
+            actual: stats.tokenSpend.actual,
+            coverage: stats.tokenSpend.coverage,
+            caveat: stats.tokenSpend.caveat,
+          }
+        : null,
     },
     signals: signals.slice(0, 8),
     memoryHits: memoryHits.slice(0, 8),
@@ -2101,6 +2259,21 @@ function buildEffectivenessMetrics(stats = {}, insights = {}) {
   const frictionRate = frictionCount / rows;
   const avgChars = (stats.textChars || 0) / rows;
   const promptScore = clampScore(insights.promptQuality?.score || 70);
+  const tokenSpend = stats.tokenSpend || buildEmptyTokenSpend();
+  const tokenTotal = Math.max(1, (tokenSpend.measured || 0) + (tokenSpend.estimated || 0));
+  const measuredCoverage = (tokenSpend.measured || 0) / tokenTotal;
+  const tokenEffectivenessDetail =
+    tokenSpend.measured > 0
+      ? `Derived from measured token rows covering ${Math.round(measuredCoverage * 100)}% of local token signal, plus goal clarity and friction density.`
+      : "Proxy from text volume, goal clarity, and friction density because no explicit local token-count rows were found.";
+  const tokenEffectivenessValue = clampScore(
+    72 -
+      Math.min(24, avgChars / 420) -
+      frictionRate * 10 +
+      goalRate * 20 +
+      verificationRate * 8 +
+      measuredCoverage * 8,
+  );
   return [
     {
       label: "Prompt quality",
@@ -2116,8 +2289,8 @@ function buildEffectivenessMetrics(stats = {}, insights = {}) {
     },
     {
       label: "Token effectiveness",
-      value: clampScore(76 - Math.min(28, avgChars / 360) - frictionRate * 10 + goalRate * 25),
-      detail: "Proxy from text volume, goal clarity, and friction density; exact token counts are not available.",
+      value: tokenEffectivenessValue,
+      detail: tokenEffectivenessDetail,
       coaching: "Front-load acceptance criteria so fewer turns are spent renegotiating the task.",
     },
     {

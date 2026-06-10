@@ -270,6 +270,73 @@ test("analyzeRows parses status-style token usage text", () => {
   assert.equal(stats.tokenSpend.actual.output, 105);
 });
 
+test("analyzeRows derives prompt quality signals from user prompt rows", () => {
+  const stats = analyzeRows([
+    {
+      timestamp: new Date().toISOString(),
+      cwd: "/tmp/agent-workflow-roast",
+      type: "event_msg",
+      payload: {
+        type: "user_message",
+        message:
+          "Goal: add prompt quality signals. Scope: analyzer only. Acceptance: npm test passes. Do not touch generated reports. Verify with git diff --check.",
+      },
+    },
+    {
+      timestamp: new Date().toISOString(),
+      cwd: "/tmp/agent-workflow-roast",
+      type: "response_item",
+      role: "assistant",
+      content: "I will implement that.",
+    },
+  ]);
+
+  assert.equal(stats.promptQuality.promptRows, 1);
+  assert.equal(stats.promptQuality.goalMentions, 1);
+  assert.equal(stats.promptQuality.constraintMentions, 1);
+  assert.equal(stats.promptQuality.acceptanceMentions, 1);
+  assert.equal(stats.promptQuality.notTouchMentions, 1);
+  assert.equal(stats.promptQuality.verificationMentions, 1);
+  assert.equal(stats.promptQuality.score > 80, true);
+});
+
+test("buildDeterministicInsights uses prompt quality and measured token coverage", () => {
+  const stats = analyzeRows([
+    {
+      timestamp: new Date().toISOString(),
+      cwd: "/tmp/agent-workflow-roast",
+      type: "event_msg",
+      payload: {
+        type: "user_message",
+        message: "Goal: improve token effectiveness. Acceptance: report measured coverage. Verify with tests.",
+      },
+    },
+    {
+      timestamp: new Date().toISOString(),
+      cwd: "/tmp/agent-workflow-roast",
+      type: "event_msg",
+      payload: {
+        type: "token_count",
+        info: {
+          last_token_usage: {
+            input_tokens: 1200,
+            cached_input_tokens: 300,
+            output_tokens: 250,
+            total_tokens: 1450,
+          },
+        },
+      },
+    },
+  ]);
+  const insights = buildDeterministicInsights(stats, []);
+  const tokenMetric = insights.effectivenessMetrics.find((item) => item.label === "Token effectiveness");
+
+  assert.equal(insights.promptQuality.score, stats.promptQuality.score);
+  assert.match(insights.promptQuality.diagnosis, /1 user prompt row/);
+  assert.match(tokenMetric.detail, /measured token rows/i);
+  assert.doesNotMatch(tokenMetric.detail, /exact token counts are not available/i);
+});
+
 test("applySessionCwd carries session cwd into later rows", () => {
   const rows = applySessionCwd([
     { type: "session_meta", payload: { cwd: "/Users/acedergr/Documents/agent-workflow-roast" } },
